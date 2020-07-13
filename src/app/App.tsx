@@ -3,10 +3,11 @@ import {
   Switch,
   Route
 } from 'react-router-dom';
+import VersionSelector from '../views/VersionSelector';
 import 'purecss';
 import './App.css';
 
-function App() {
+export default function App() {
   return (
     <div className="App">
       <Switch>
@@ -23,11 +24,9 @@ function App() {
         </Route>
 
         <Route path="/">
-
+          <VersionSelector />
         </Route>
       </Switch>
     </div>
   );
 }
-
-export default App;

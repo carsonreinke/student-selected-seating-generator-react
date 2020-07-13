@@ -1,0 +1,17 @@
+.ribbon {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  
+p.bottom {
+  position: absolute;
+  bottom: 0;
+}
+
+@media (max-width: 768px) {
+  p.bottom {
+    position: relative;
+    bottom: auto;
+  }
+}
