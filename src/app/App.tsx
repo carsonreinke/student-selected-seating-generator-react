@@ -3,6 +3,7 @@ import {
   Switch,
   Route
 } from 'react-router-dom';
+import 'purecss';
 import './App.css';
 
 function App() {
