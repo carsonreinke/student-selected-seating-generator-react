@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState, selectExpanded } from './rootSlice';
 import {
   Switch,
   Route
@@ -7,9 +9,11 @@ import VersionSelector from '../views/VersionSelector';
 import 'purecss';
 import './App.css';
 
-export default function App() {
+const App: FunctionComponent = () => {
+  const expanded = useSelector(selectExpanded);
+
   return (
-    <div>
+    <div className={expanded ? 'expanded': ''}>
       <Switch>
         <Route path="/desks" >
 
@@ -29,4 +33,5 @@ export default function App() {
       </Switch>
     </div>
   );
-}
+};
+export default App;

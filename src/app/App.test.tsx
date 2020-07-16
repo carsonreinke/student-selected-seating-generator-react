@@ -1,24 +1,26 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter} from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './store';
 import App from './App';
 
 test('home', () => {
-  render(<MemoryRouter initialEntries={['/']}><App /></MemoryRouter>);
+  render(<Provider store={store}><MemoryRouter initialEntries={['/']}><App /></MemoryRouter></Provider>);
   fail('Not yet');
 });
 
 test('desks', () => {
-  render(<MemoryRouter initialEntries={['/desks']}><App /></MemoryRouter>);
+  render(<Provider store={store}><MemoryRouter initialEntries={['/desks']}><App /></MemoryRouter></Provider>);
   fail('Not yet');
 });
 
 test('students', () => {
-  render(<MemoryRouter initialEntries={['/students']}><App /></MemoryRouter>);
+  render(<Provider store={store}><MemoryRouter initialEntries={['/students']}><App /></MemoryRouter></Provider>);
   fail('Not yet');
 });
 
 test('report', () => {
-  render(<MemoryRouter initialEntries={['/report']}><App /></MemoryRouter>);
+  render(<Provider store={store}><MemoryRouter initialEntries={['/report']}><App /></MemoryRouter></Provider>);
   fail('Not yet');
 });
