@@ -1,24 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import Room from '../models/room';
 import { unmarshal } from '../models';
-import { stat } from 'fs';
 import { AppThunk } from './store';
 
 const VERSION_PREFIX = 'sssg-';
 const VERSION_REFS = '-refs';
 const INITIAL_DESKS = 6;
 
-const saveRoomToStorage = (room: Room): void => {
+const saveRoomToStorage = (storage: Storage, room: Room): void => {
   const refs = {},
     version = room.createdAt;
 
-  window.localStorage.setItem(`${VERSION_PREFIX}${version}`, JSON.stringify(room.marshal(refs)));
-  window.localStorage.setItem(`${VERSION_PREFIX}${version}${VERSION_REFS}`, JSON.stringify(refs));
+  storage.setItem(`${VERSION_PREFIX}${version}`, JSON.stringify(room.marshal(refs)));
+  storage.setItem(`${VERSION_PREFIX}${version}${VERSION_REFS}`, JSON.stringify(refs));
 };
 
-const loadRoomFromStorage = (version: string): Room => {
-  const itemVersion = window.localStorage.getItem(`${version}`),
-    itemRefs = window.localStorage.getItem(`${version}${VERSION_REFS}`);
+const loadRoomFromStorage = (storage: Storage, version: string): Room => {
+  const itemVersion = storage.getItem(`${version}`),
+    itemRefs = storage.getItem(`${version}${VERSION_REFS}`);
   if (!itemVersion || !itemRefs) {
     throw new Error('Missing correctly formatted data in local storage');
   }
@@ -60,14 +59,15 @@ const appSlice = createSlice({
 
 export const {
   toggle,
-  addVersion
+  addVersion,
+  clearVersions
 } = appSlice.actions;
 
 export default appSlice.reducer;
 
-export const versions = (): AppThunk => async (dispatch) => {
+export const versions = (storage: Storage): AppThunk => async (dispatch) => {
   dispatch(appSlice.actions.clearVersions());
-  [...Array(window.localStorage.length)].map((_, index) => window.localStorage.key(index))
+  [...Array(storage.length)].map((_, index) => storage.key(index))
     .filter(version => version && version.startsWith(VERSION_PREFIX))
     .filter(version => version && !version.endsWith(VERSION_REFS))
     .forEach((version) => {
@@ -76,10 +76,11 @@ export const versions = (): AppThunk => async (dispatch) => {
       }
 
       try {
-        const room = loadRoomFromStorage(version);
+        const room = loadRoomFromStorage(storage, version);
         dispatch(addVersion(room));
       }
       catch (err) {
+        //TODO wrong place for this
         console.error(err);
       }
     });

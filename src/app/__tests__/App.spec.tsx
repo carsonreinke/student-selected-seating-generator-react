@@ -2,8 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter} from 'react-router-dom';
 import { Provider } from 'react-redux';
-import store from './store';
-import App from './App';
+import store from '../store';
+import App from '../App';
 
 test('home', () => {
   render(<Provider store={store}><MemoryRouter initialEntries={['/']}><App /></MemoryRouter></Provider>);
