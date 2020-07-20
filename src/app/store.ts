@@ -1,9 +1,12 @@
-import { configureStore, Action } from '@reduxjs/toolkit'
+import { configureStore, Action, getDefaultMiddleware } from '@reduxjs/toolkit'
 import { ThunkAction } from 'redux-thunk'
 import rootReducer, { RootState } from './rootSlice'
 
 const store = configureStore({
-  reducer: rootReducer
+  reducer: rootReducer,
+  middleware: getDefaultMiddleware({
+    serializableCheck: false
+  })
 })
 
 //TODO

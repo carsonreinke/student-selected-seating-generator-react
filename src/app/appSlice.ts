@@ -1,11 +1,9 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, Action, ThunkAction } from '@reduxjs/toolkit';
 import Room from '../models/room';
 import { unmarshal } from '../models';
-import { AppThunk } from './store';
 
 const VERSION_PREFIX = 'sssg-';
 const VERSION_REFS = '-refs';
-const INITIAL_DESKS = 6;
 
 const saveRoomToStorage = (storage: Storage, room: Room): void => {
   const refs = {},
@@ -34,6 +32,8 @@ interface AppState {
   versions: Room[];
   newVersion: boolean;
 }
+
+type AppThunk = ThunkAction<void, AppState, null, Action<string>>;
 
 const initialState: AppState = {
   expanded: false,
@@ -66,22 +66,31 @@ export const {
 export default appSlice.reducer;
 
 export const versions = (storage: Storage): AppThunk => async (dispatch) => {
-  dispatch(appSlice.actions.clearVersions());
+  dispatch(clearVersions());
   [...Array(storage.length)].map((_, index) => storage.key(index))
     .filter(version => version && version.startsWith(VERSION_PREFIX))
     .filter(version => version && !version.endsWith(VERSION_REFS))
     .forEach((version) => {
-      if(!version) {
+      if (!version) {
         return;
       }
 
-      try {
+      //try {
         const room = loadRoomFromStorage(storage, version);
         dispatch(addVersion(room));
-      }
-      catch (err) {
+      //}
+      //catch (err) {
         //TODO wrong place for this
-        console.error(err);
-      }
+      //  console.error(err);
+      //}
     });
+}
+
+export const saveVersion = (storage: Storage, room: Room): AppThunk => async (dispatch, getState) => {
+  saveRoomToStorage(storage, room);
+
+  //Add version if new
+  if (!getState().versions.includes(room)) {
+    dispatch(addVersion(room));
+  }
 }
