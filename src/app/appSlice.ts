@@ -30,15 +30,13 @@ const loadRoomFromStorage = (storage: Storage, version: string): Room => {
 interface AppState {
   expanded: boolean;
   versions: Room[];
-  newVersion: boolean;
 }
 
 type AppThunk = ThunkAction<void, AppState, null, Action<string>>;
 
 const initialState: AppState = {
   expanded: false,
-  versions: [],
-  newVersion: false,
+  versions: []
 };
 
 const appSlice = createSlice({
@@ -76,11 +74,11 @@ export const versions = (storage: Storage): AppThunk => async (dispatch) => {
       }
 
       //try {
-        const room = loadRoomFromStorage(storage, version);
-        dispatch(addVersion(room));
+      const room = loadRoomFromStorage(storage, version);
+      dispatch(addVersion(room));
       //}
       //catch (err) {
-        //TODO wrong place for this
+      //TODO wrong place for this
       //  console.error(err);
       //}
     });

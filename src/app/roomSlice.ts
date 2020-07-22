@@ -1,13 +1,32 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, ThunkAction, Action } from '@reduxjs/toolkit';
 import Room from '../models/room';
 import BruteForceStrategy from '../models/brute-force-strategy';
+import Desk from '../models/desk';
+import Student from '../models/student';
+
+const INITIAL_DESKS = 6;
 
 interface RoomState {
-  current: Room
+  current: Room,
+  newVersion: boolean;
 }
 
+interface MoveDeskPayload {
+  desk: Desk;
+  x: number;
+  y: number;
+}
+
+interface RotateDeskPayload {
+  desk: Desk;
+  angle: number;
+}
+
+type RoomThunk = ThunkAction<void, RoomState, null, Action<string>>;
+
 const initialState: RoomState = {
-  current: new Room(new BruteForceStrategy())
+  current: new Room(new BruteForceStrategy()),
+  newVersion: true
 };
 
 const roomSlice = createSlice({
@@ -16,13 +35,93 @@ const roomSlice = createSlice({
   reducers: {
     loadVersion: (state: RoomState, action: PayloadAction<Room>) => {
       state.current = action.payload;
+    },
+    addDesk: (state: RoomState) => {
+      state.current.addDesk();
+    },
+    removeDesk: (state: RoomState, action: PayloadAction<Desk>) => {
+      const desk = action.payload;
+      state.current.removeDesk(desk);
+      if (desk.student) {
+        state.current.removeStudent(desk.student);
+      }
+    },
+    addStudent: (state: RoomState) => {
+      state.current.addStudent();
+    },
+    removeStudent: (state: RoomState, action: PayloadAction<Student>) => {
+      const student = action.payload;
+      state.current.removeStudent(student);
+
+      const desk = state.current.desks.find((desk: Desk) => {
+        return desk.student === student;
+      });
+      if (desk) {
+        state.current.removeDesk(desk);
+      }
+    },
+    moveDesk: {
+      reducer: (state: RoomState, action: PayloadAction<MoveDeskPayload>) => {
+        const desk: Desk = state.current.desks.find((desk: Desk) => desk === action.payload.desk);
+        desk.position.x = action.payload.x;
+        desk.position.y = action.payload.y;
+      },
+      prepare: (desk: Desk, x: number, y: number) => {
+        return {
+          payload: {
+            desk, x, y
+          }
+        };
+      }
+    },
+    rotateDesk: {
+      reducer: (state: RoomState, action: PayloadAction<RotateDeskPayload>) => {
+        const desk: Desk = state.current.desks.find((desk: Desk) => desk === action.payload.desk);
+        desk.position.angle = action.payload.angle;
+      },
+      prepare: (desk: Desk, angle: number) => {
+        return {
+          payload: {
+            desk, angle
+          }
+        };
+      }
+    },
+    clearRoom: (state: RoomState) => {
+      state.current = new Room(new BruteForceStrategy());
+    },
+    toggleNewVersion: (state: RoomState, action: PayloadAction<boolean>) => {
+      state.newVersion = action.payload;
     }
   }
 });
 
-export const { loadVersion } = roomSlice.actions;
+export const { loadVersion, addDesk, moveDesk, removeDesk, rotateDesk, addStudent, removeStudent } = roomSlice.actions;
 
 export default roomSlice.reducer;
+
+export const normalize = (): RoomThunk => (dispatch, getState) => {
+  const state = getState();
+  const diff = state.current.desks.length - state.current.students.length;
+
+  if (diff < 0) {
+    state.current.students.slice(diff).forEach(student => dispatch(removeStudent(student)));
+  }
+  else if (diff > 0) {
+    [...Array(diff)].forEach(() => dispatch(addStudent()));
+  }
+};
+
+export const newVersion = (): RoomThunk => async (dispatch) => {
+  await dispatch(roomSlice.actions.clearRoom());
+  await dispatch(roomSlice.actions.toggleNewVersion(true));
+
+  await Promise.all([...Array(INITIAL_DESKS)].map(() => {
+    return dispatch(addDesk());
+  }));
+
+  dispatch(normalize());
+}
 
 /*
 import Vue from 'vue';

@@ -40,6 +40,6 @@ export const selectIsEmpty = createSelector([selectDeskCount, selectStudentCount
   return c1 === 0 && c2 === 0;
 });
 export const selectVersions = (state: RootState): Room[] => state.app.versions;
-export const selectNewVersion = (state: RootState): boolean => state.app.newVersion;
+export const selectNewVersion = (state: RootState): boolean => state.room.newVersion;
 
 export default rootReducer;

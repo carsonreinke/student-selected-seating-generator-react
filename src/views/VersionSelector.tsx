@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, MouseEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState, selectExpanded } from '../app/rootSlice';
+import { selectExpanded } from '../app/rootSlice';
 import { toggle } from '../app/appSlice';
 import Hamburger from '../components/Hamburger';
 import Header from '../components/Header';
@@ -15,6 +15,10 @@ const VersionSelector = () => {
     () => dispatch(toggle()),
     [dispatch]
   );
+  const onNewVersion = (event: MouseEvent) => {
+    event.preventDefault();
+    //TODO
+  }
 
   return (
     <div>
@@ -23,9 +27,9 @@ const VersionSelector = () => {
         <Header />
         <p>Let's get started!</p>
         <ul className="pure-menu-list">
-          {/*<li class="pure-menu-item pure-menu-link menu-new" @click="newVersion">
-              <img src={add} alt="New" /> New
-            </li>*/}
+          <li className="pure-menu-item pure-menu-link menu-new" onClick={onNewVersion}>
+            <img src={add} alt="New" /> New
+          </li>
         </ul>
         <h3>Saved</h3>
         <ul className="pure-menu-list menu-bottom">
