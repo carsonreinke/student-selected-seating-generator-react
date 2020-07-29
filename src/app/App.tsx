@@ -5,9 +5,10 @@ import {
   Switch,
   Route
 } from 'react-router-dom';
-import VersionSelector from '../views/VersionSelector';
 import 'purecss';
 import './App.css';
+import VersionSelector from '../views/VersionSelector';
+import DeskEditor from '../views/DeskEditor';
 
 const App: FunctionComponent = () => {
   const expanded = useSelector(selectExpanded);
@@ -16,7 +17,7 @@ const App: FunctionComponent = () => {
     <div className={expanded ? 'expanded': ''}>
       <Switch>
         <Route path="/desks" >
-
+          <DeskEditor />
         </Route>
 
         <Route path="/students">

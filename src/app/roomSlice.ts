@@ -1,31 +1,28 @@
-import { createSlice, PayloadAction, ThunkAction, Action } from '@reduxjs/toolkit';
-import Room from '../models/room';
-import BruteForceStrategy from '../models/brute-force-strategy';
-import Desk from '../models/desk';
-import Student from '../models/student';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AppThunk } from './store';
+import { length } from '../utils/collection';
+import { Room, buildRoom, addDesk as roomAddDesk, removeDesk as roomRemoveDesk, addStudent as roomAddStudent, removeStudent as roomRemoveStudent } from '../models/room';
 
 const INITIAL_DESKS = 6;
 
 interface RoomState {
-  current: Room,
+  current: Room;
   newVersion: boolean;
 }
 
 interface MoveDeskPayload {
-  desk: Desk;
+  id: string;
   x: number;
   y: number;
 }
 
 interface RotateDeskPayload {
-  desk: Desk;
+  id: string;
   angle: number;
 }
 
-type RoomThunk = ThunkAction<void, RoomState, null, Action<string>>;
-
 const initialState: RoomState = {
-  current: new Room(new BruteForceStrategy()),
+  current: buildRoom(),
   newVersion: true
 };
 
@@ -37,58 +34,46 @@ const roomSlice = createSlice({
       state.current = action.payload;
     },
     addDesk: (state: RoomState) => {
-      state.current.addDesk();
+      roomAddDesk(state.current);
     },
-    removeDesk: (state: RoomState, action: PayloadAction<Desk>) => {
-      const desk = action.payload;
-      state.current.removeDesk(desk);
-      if (desk.student) {
-        state.current.removeStudent(desk.student);
-      }
+    removeDesk: (state: RoomState, action: PayloadAction<string>) => {
+      roomRemoveDesk(state.current, action.payload);
     },
     addStudent: (state: RoomState) => {
-      state.current.addStudent();
+      roomAddStudent(state.current);
     },
-    removeStudent: (state: RoomState, action: PayloadAction<Student>) => {
-      const student = action.payload;
-      state.current.removeStudent(student);
-
-      const desk = state.current.desks.find((desk: Desk) => {
-        return desk.student === student;
-      });
-      if (desk) {
-        state.current.removeDesk(desk);
-      }
+    removeStudent: (state: RoomState, action: PayloadAction<string>) => {
+      roomRemoveStudent(state.current, action.payload);
     },
     moveDesk: {
       reducer: (state: RoomState, action: PayloadAction<MoveDeskPayload>) => {
-        const desk: Desk = state.current.desks.find((desk: Desk) => desk === action.payload.desk);
-        desk.position.x = action.payload.x;
-        desk.position.y = action.payload.y;
+        const desk = state.current.desks.data[action.payload.id];
+        desk.x = action.payload.x;
+        desk.y = action.payload.y;
       },
-      prepare: (desk: Desk, x: number, y: number) => {
+      prepare: (desk: string, x: number, y: number) => {
         return {
           payload: {
-            desk, x, y
+            id: desk, x, y
           }
         };
       }
     },
     rotateDesk: {
       reducer: (state: RoomState, action: PayloadAction<RotateDeskPayload>) => {
-        const desk: Desk = state.current.desks.find((desk: Desk) => desk === action.payload.desk);
-        desk.position.angle = action.payload.angle;
+        const desk = state.current.desks.data[action.payload.id];
+        desk.angle = action.payload.angle;
       },
-      prepare: (desk: Desk, angle: number) => {
+      prepare: (desk: string, angle: number) => {
         return {
           payload: {
-            desk, angle
+            id: desk, angle
           }
         };
       }
     },
     clearRoom: (state: RoomState) => {
-      state.current = new Room(new BruteForceStrategy());
+      state.current = buildRoom();
     },
     toggleNewVersion: (state: RoomState, action: PayloadAction<boolean>) => {
       state.newVersion = action.payload;
@@ -96,31 +81,38 @@ const roomSlice = createSlice({
   }
 });
 
-export const { loadVersion, addDesk, moveDesk, removeDesk, rotateDesk, addStudent, removeStudent } = roomSlice.actions;
+export const { loadVersion, removeDesk, addDesk, removeStudent, addStudent, moveDesk, rotateDesk } = roomSlice.actions;
 
 export default roomSlice.reducer;
 
-export const normalize = (): RoomThunk => (dispatch, getState) => {
+/**
+ *
+ */
+export const normalize = (): AppThunk => (dispatch, getState) => {
   const state = getState();
-  const diff = state.current.desks.length - state.current.students.length;
+  const diff = length(state.room.current.desks)
+    - length(state.room.current.students);
 
   if (diff < 0) {
-    state.current.students.slice(diff).forEach(student => dispatch(removeStudent(student)));
+    Object.getOwnPropertyNames(state.room.current.students.data).slice(diff).forEach((student: string) => dispatch(removeStudent(student)));
   }
   else if (diff > 0) {
     [...Array(diff)].forEach(() => dispatch(addStudent()));
   }
 };
 
-export const newVersion = (): RoomThunk => async (dispatch) => {
+/**
+ *
+ */
+export const newVersion = (): AppThunk => async (dispatch) => {
   await dispatch(roomSlice.actions.clearRoom());
   await dispatch(roomSlice.actions.toggleNewVersion(true));
 
-  await Promise.all([...Array(INITIAL_DESKS)].map(() => {
+  await Promise.all([...Array(INITIAL_DESKS)].map(async () => {
     return dispatch(addDesk());
   }));
 
-  dispatch(normalize());
+  await dispatch(normalize());
 }
 
 /*

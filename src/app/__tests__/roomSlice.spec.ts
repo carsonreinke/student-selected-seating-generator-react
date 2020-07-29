@@ -1,95 +1,96 @@
 import room, { addDesk, moveDesk, rotateDesk, removeDesk, addStudent, normalize, newVersion, removeStudent } from '../roomSlice';
-import Room from '../../models/room';
-import Desk from '../../models/desk';
+import { buildRoom, addDesk as roomAddDesk, addStudent as roomAddStudent } from '../../models/room';
 import { mockStore } from '../../../tests/mockStore';
+import { length, toArray } from '../../utils/collection';
+import { RootState } from '../rootSlice';
 
 test('initial state', () => {
   expect(
     room(undefined, { type: '' }).current
-  ).toBeInstanceOf(Room);
+  ).toHaveProperty('id');
 });
 
 describe('add desk', () => {
   test('action', () => {
-    const state = room({current: new Room(), newVersion: true}, addDesk);
+    const state = room({ current: buildRoom(), newVersion: true }, addDesk);
 
-    expect(state.current.desks.length).toEqual(1);
+    expect(length(state.current.desks)).toEqual(1);
   });
 });
 
 describe('move desk', () => {
   test('move to new position', () => {
-    const r = new Room();
-    const desk = r.addDesk();
-    const state = room({current: r, newVersion: true}, moveDesk(desk, 1, 2));
+    const r = buildRoom();
+    const desk = roomAddDesk(r);
+    const state = room({ current: r, newVersion: true }, moveDesk(desk.id, 1, 2));
 
-    expect(desk.position.x).toEqual(1);
-    expect(desk.position.y).toEqual(2);
+    expect(state.current.desks.data[desk.id].x).toEqual(1);
+    expect(state.current.desks.data[desk.id].y).toEqual(2);
   });
 });
 
 describe('rotate desk', () => {
   test('rotate to new angle', () => {
-    const r = new Room();
-    const desk = r.addDesk();
-    const state = room({current: r, newVersion: true}, rotateDesk(desk, 90));
+    const r = buildRoom();
+    const desk = roomAddDesk(r);
+    const state = room({ current: r, newVersion: true }, rotateDesk(desk.id, 90));
 
-    expect(desk.position.angle).toEqual(90);
+    expect(state.current.desks.data[desk.id].angle).toEqual(90);
   });
 });
 
 describe('remove desk', () => {
   test('remove existing desk', () => {
-    const r = new Room();
-    const desk = r.addDesk();
-    const state = room({current: r, newVersion: true}, removeDesk(desk));
+    const r = buildRoom();
+    const desk = roomAddDesk(r);
+    const state = room({ current: r, newVersion: true }, removeDesk(desk.id));
 
-    expect(state.current.desks).toEqual([]);
+    expect(toArray(state.current.desks)).toEqual([]);
   });
 });
 
 describe('add student', () => {
   test('action', () => {
-    const state = room({current: new Room(), newVersion: true}, addStudent);
+    const state = room({ current: buildRoom(), newVersion: true }, addStudent);
 
-    expect(state.current.students.length).toEqual(1);
+    expect(length(state.current.students)).toEqual(1);
   });
 });
 
 describe('remove desk', () => {
   test('action', () => {
-    const r = new Room();
-    const student = r.addStudent();
-    const state = room({current: r, newVersion: true}, removeStudent(student));
+    const r = buildRoom();
+    const student = roomAddStudent(r);
+    const state = room({ current: r, newVersion: true }, removeStudent(student.id));
 
-    expect(state.current.students).toEqual([]);
+    expect(toArray(state.current.students)).toEqual([]);
   });
 
   test('remove associated desk', () => {
-    const r = new Room();
-    const student = r.addStudent();
-    const desk = r.addDesk();
-    desk.student = student;
-    const state = room({current: r, newVersion: true}, removeStudent(student));
+    const r = buildRoom();
+    const student = roomAddStudent(r);
+    const desk = roomAddDesk(r);
+    r.desks.students[desk.id] = [student.id];
+    const state = room({ current: r, newVersion: true }, removeStudent(student.id));
 
-    expect(state.current.students).toEqual([]);
-    expect(state.current.desks).toEqual([]);
+    expect(toArray(state.current.students)).toEqual([]);
+    expect(toArray(state.current.desks)).toEqual([]);
   });
 });
 
 describe('normalize', () => {
   test('empty', async () => {
-    const store = mockStore({current: new Room(), newVersion: true});
+    const store = mockStore<RootState>({ app: { expanded: false, versions: [] }, room: { current: buildRoom(), newVersion: true } });
     await store.dispatch(normalize());
 
     expect(store.getActions()).toEqual([]);
   });
 
   test('too many desks', async () => {
-    const room = new Room();
-    room.addDesk(); room.addDesk();
-    room.addStudent();
-    const store = mockStore({current: room, newVersion: true});
+    const room = buildRoom();
+    roomAddDesk(room); roomAddDesk(room);
+    roomAddStudent(room);
+    const store = mockStore({ app: { expanded: false, versions: [] }, room: { current: room, newVersion: true } });
     const state = store.getState();
 
     await store.dispatch(normalize());
@@ -100,10 +101,10 @@ describe('normalize', () => {
   });
 
   test('too many students', async () => {
-    const room = new Room();
-    room.addDesk();
-    room.addStudent(); room.addStudent();
-    const store = mockStore({current: room, newVersion: true});
+    const room = buildRoom();
+    roomAddDesk(room);
+    roomAddStudent(room); roomAddStudent(room);
+    const store = mockStore({ app: { expanded: false, versions: [] }, room: { current: room, newVersion: true } });
     const state = store.getState();
 
     await store.dispatch(normalize());
@@ -116,8 +117,8 @@ describe('normalize', () => {
 
 describe('new version', () => {
   test('state reset', async () => {
-    const room = new Room();
-    const store = mockStore({current: room, newVersion: false});
+    const room = buildRoom();
+    const store = mockStore({ app: { expanded: false, versions: [] }, room: { current: room, newVersion: false } });
 
     await store.dispatch(newVersion());
 

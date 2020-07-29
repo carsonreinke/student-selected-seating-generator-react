@@ -1,24 +1,32 @@
-import React, { useCallback, MouseEvent } from 'react';
+import React, { useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectExpanded } from '../app/rootSlice';
+import { selectExpanded, selectVersions } from '../app/rootSlice';
 import { toggle } from '../app/appSlice';
+import { newVersion, loadVersion } from '../app/roomSlice';
 import Hamburger from '../components/Hamburger';
 import Header from '../components/Header';
 import styles from './VersionSelector.module.css';
 import add from '../assets/images/add.svg';
+import { useHistory } from 'react-router-dom';
+import { Room } from '../models/room';
 
 const VersionSelector = () => {
   const expanded = useSelector(selectExpanded);
+  const history = useHistory();
 
   const dispatch = useDispatch();
   const onToggle = useCallback(
     () => dispatch(toggle()),
     [dispatch]
   );
-  const onNewVersion = (event: MouseEvent) => {
-    event.preventDefault();
-    //TODO
-  }
+  const onNewVersion = async () => {
+    await dispatch(newVersion());
+    history.push('/desks'); //TODO
+  };
+  const onLoadVersion = async (version: Room) => {
+    await dispatch(loadVersion(version));
+    history.push('/desks'); //TODO
+  };
 
   return (
     <div>
@@ -33,13 +41,13 @@ const VersionSelector = () => {
         </ul>
         <h3>Saved</h3>
         <ul className="pure-menu-list menu-bottom">
-          {/*<li
-              class="pure-menu-item pure-menu-link"
-              v-for="version in versions"
-              :key="version.id"
-              @click="loadVersion(version)"
-            >{{ version.name }} Created On {{ version.createdAtDate().toLocaleString() }}</li>
-            */}
+          {useSelector(selectVersions).map(version => {
+            return (
+              <li className="pure-menu-item pure-menu-link" key={version.id} onClick={() => {onLoadVersion(version)}}>
+                {version.name} Created on {new Date(version.createdAt).toLocaleString()}
+              </li>
+            );
+          })}
         </ul>
       </nav>
       <main>

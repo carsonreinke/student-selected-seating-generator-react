@@ -1,12 +1,12 @@
 import { selectExpanded, RootState, selectCurrentRoom, selectName, selectAllDesks, selectDeskCount, selectAllStudents, selectStudentCount, selectIsEmpty, selectVersions, selectNewVersion } from '../rootSlice';
-import Room from '../../models/room';
+import { buildRoom, addDesk, addStudent } from '../../models/room';
 
 let state: RootState;
 
 beforeEach(() => {
   state = {
     app: {expanded: false, versions: []},
-    room: {current: new Room(), newVersion: true}
+    room: {current: buildRoom(), newVersion: true}
   };
 });
 
@@ -29,25 +29,25 @@ test('select name', () => {
 });
 
 test('select desks', () => {
-  const desk = state.room.current.addDesk();
+  const desk = addDesk(state.room.current);
 
   expect(selectAllDesks(state)).toEqual([desk]);
 });
 
 test('select desk count', () => {
-  state.room.current.addDesk();
+  addDesk(state.room.current);
 
   expect(selectDeskCount(state)).toEqual(1);
 });
 
 test('select students', () => {
-  const student = state.room.current.addStudent();
+  const student = addStudent(state.room.current);
 
   expect(selectAllStudents(state)).toEqual([student]);
 });
 
 test('select student count', () => {
-  state.room.current.addStudent();
+  addStudent(state.room.current);
 
   expect(selectStudentCount(state)).toEqual(1);
 });
@@ -57,19 +57,19 @@ test('select is empty with no desks or students', () => {
 });
 
 test('select is empty with desk', () => {
-  state.room.current.addDesk();
+  addDesk(state.room.current);
 
   expect(selectIsEmpty(state)).toBeFalsy();
 });
 
 test('select is empty with student', () => {
-  state.room.current.addStudent();
+  addStudent(state.room.current);
 
   expect(selectIsEmpty(state)).toBeFalsy();
 });
 
 test('select versions', () => {
-  const room = new Room();
+  const room = buildRoom();
   state.app.versions.push(room);
 
   expect(selectVersions(state)).toEqual([room]);

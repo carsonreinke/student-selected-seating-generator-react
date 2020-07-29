@@ -1,30 +1,21 @@
 import { createSlice, PayloadAction, Action, ThunkAction } from '@reduxjs/toolkit';
-import Room from '../models/room';
-import { unmarshal } from '../models';
+import { Room } from '../models/room';
 
 const VERSION_PREFIX = 'sssg-';
-const VERSION_REFS = '-refs';
 
 const saveRoomToStorage = (storage: Storage, room: Room): void => {
-  const refs = {},
-    version = room.createdAt;
+  const version = room.createdAt;
 
-  storage.setItem(`${VERSION_PREFIX}${version}`, JSON.stringify(room.marshal(refs)));
-  storage.setItem(`${VERSION_PREFIX}${version}${VERSION_REFS}`, JSON.stringify(refs));
+  storage.setItem(`${VERSION_PREFIX}${version}`, JSON.stringify(room));
 };
 
 const loadRoomFromStorage = (storage: Storage, version: string): Room => {
-  const itemVersion = storage.getItem(`${version}`),
-    itemRefs = storage.getItem(`${version}${VERSION_REFS}`);
-  if (!itemVersion || !itemRefs) {
+  const itemVersion = storage.getItem(`${version}`);
+  if (!itemVersion) {
     throw new Error('Missing correctly formatted data in local storage');
   }
 
-  const object = JSON.parse(itemVersion),
-    refs = JSON.parse(itemRefs);
-
-  //TODO
-  return unmarshal(object, refs) as Room;
+  return JSON.parse(itemVersion) as Room;
 };
 
 interface AppState {
@@ -67,7 +58,6 @@ export const versions = (storage: Storage): AppThunk => async (dispatch) => {
   dispatch(clearVersions());
   [...Array(storage.length)].map((_, index) => storage.key(index))
     .filter(version => version && version.startsWith(VERSION_PREFIX))
-    .filter(version => version && !version.endsWith(VERSION_REFS))
     .forEach((version) => {
       if (!version) {
         return;
