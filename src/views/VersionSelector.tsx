@@ -1,24 +1,23 @@
-import React, { useCallback } from 'react';
+import React, { ReactNode } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectExpanded, selectVersions } from '../app/rootSlice';
-import { toggle } from '../app/appSlice';
+import { selectVersions } from '../app/rootSlice';
 import { newVersion, loadVersion } from '../app/roomSlice';
-import Hamburger from '../components/Hamburger';
 import Header from '../components/Header';
 import styles from './VersionSelector.module.css';
 import add from '../assets/images/add.svg';
 import { useHistory } from 'react-router-dom';
 import { Room } from '../models/room';
 
-const VersionSelector = () => {
-  const expanded = useSelector(selectExpanded);
+interface VersionSelectorProps {
+  menu: ReactNode;
+}
+
+const VersionSelector = ({
+  menu
+}: VersionSelectorProps) => {
   const history = useHistory();
 
   const dispatch = useDispatch();
-  const onToggle = useCallback(
-    () => dispatch(toggle()),
-    [dispatch]
-  );
   const onNewVersion = async () => {
     await dispatch(newVersion());
     history.push('/desks'); //TODO
@@ -30,7 +29,7 @@ const VersionSelector = () => {
 
   return (
     <div>
-      <Hamburger expanded={expanded} toggle={onToggle} />
+      {menu}
       <nav className="pure-menu">
         <Header />
         <p>Let's get started!</p>
@@ -43,7 +42,7 @@ const VersionSelector = () => {
         <ul className="pure-menu-list menu-bottom">
           {useSelector(selectVersions).map(version => {
             return (
-              <li className="pure-menu-item pure-menu-link" key={version.id} onClick={() => {onLoadVersion(version)}}>
+              <li className="pure-menu-item pure-menu-link" key={version.id} onClick={() => { onLoadVersion(version) }}>
                 {version.name} Created on {new Date(version.createdAt).toLocaleString()}
               </li>
             );
