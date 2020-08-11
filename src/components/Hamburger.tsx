@@ -21,7 +21,7 @@ const Hamburger = ({
   }
 
   return (
-    <a className={classes} onClick={onToggle}>
+    <a className={classes} onClick={onToggle} title={expanded ? 'Collapse' : 'Expand'}>
       <span></span>
     </a>
   );

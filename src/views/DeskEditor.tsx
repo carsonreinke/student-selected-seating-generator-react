@@ -7,7 +7,7 @@ interface DeskEditorProps {
 
 export const DeskEditor = ({ menu }: DeskEditorProps) => {
   return (
-    <div>
+    <div className="view-desk-editor">
       {menu}
       <nav className="pure-menu">
         <Header />

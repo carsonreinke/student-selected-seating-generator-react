@@ -1,5 +1,5 @@
 import app, { toggle, versions, clearVersions, addVersion, saveVersion } from '../appSlice';
-import { Room, buildRoom } from '../../models/room';
+import { buildRoom } from '../../models/room';
 import { mockStore } from '../../../tests/mockStore';
 
 let storage: any;

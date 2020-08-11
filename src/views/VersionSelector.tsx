@@ -28,7 +28,7 @@ const VersionSelector = ({
   };
 
   return (
-    <div>
+    <div className="view-version-selector">
       {menu}
       <nav className="pure-menu">
         <Header />
