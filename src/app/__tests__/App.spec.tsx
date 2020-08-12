@@ -18,15 +18,15 @@ const commonTests = (path: string, text: string) => {
       result = render(<Provider store={store}><MemoryRouter initialEntries={[path]}><App /></MemoryRouter></Provider>);
     })
 
-    test('content', () => {
+    it('should display content', () => {
       expect(result.getByText(text)).toBeInTheDocument();
     });
 
-    test('menu collapsed', () => {
+    it('should have a menu collapsed', () => {
       expect(result.getByTitle('Expand')).toBeInTheDocument();
     });
 
-    test('menu will expand', () => {
+    it('should allow menu to expand', () => {
       fireEvent.click(result.getByTitle('Expand'));
 
       const actions = store.getActions();

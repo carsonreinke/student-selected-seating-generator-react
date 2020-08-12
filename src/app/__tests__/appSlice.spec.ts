@@ -14,26 +14,26 @@ beforeEach(() => {
   };
 });
 
-test('initial state', () => {
+it('should use initial state', () => {
   expect(
     app(undefined, { type: '' })
   ).toEqual({ expanded: false, versions: [] });
 });
 
 describe('initial state', () => {
-  test('able to toggle on', () => {
+  it('should able to toggle on', () => {
     const state = app({ expanded: false, versions: [] }, toggle);
     expect(state).toEqual({ expanded: true, versions: [] });
   });
 
-  test('able to toggle off', () => {
+  it('should able to toggle off', () => {
     const state = app({ expanded: true, versions: [] }, toggle);
     expect(state).toEqual({ expanded: false, versions: [] });
   });
 });
 
 describe('versions', () => {
-  test('empty storage', async () => {
+  it('should load from empty storage', async () => {
     const store = mockStore({ expanded: false, versions: [] });
 
     await store.dispatch(versions(storage));
@@ -41,7 +41,7 @@ describe('versions', () => {
     expect(store.getActions()).toEqual([{ type: clearVersions.type, payload: undefined }])
   });
 
-  test('from storage', async () => {
+  it('should pull from storage', async () => {
     storage.length = 2;
     storage.key.mockImplementation((index: number) => {
       switch (index) {
@@ -66,7 +66,7 @@ describe('versions', () => {
 });
 
 describe('saveVersion', () => {
-  test('to storage', async () => {
+  it('should save to storage', async () => {
     const room = buildRoom();
 
     const store = mockStore({ expanded: false, newVersion: false, versions: [] });
@@ -80,7 +80,7 @@ describe('saveVersion', () => {
     expect(storage.setItem).toBeCalledTimes(1);
   });
 
-  test('not duplicate in versions', async () => {
+  it('should not duplicate in versions', async () => {
     const room = buildRoom();
 
     const store = mockStore({ expanded: false, newVersion: false, versions: [room] });
