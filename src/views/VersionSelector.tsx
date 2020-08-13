@@ -5,26 +5,25 @@ import { newVersion, loadVersion } from '../app/roomSlice';
 import Header from '../components/Header';
 import styles from './VersionSelector.module.css';
 import add from '../assets/images/add.svg';
-import { useHistory } from 'react-router-dom';
 import { Room } from '../models/room';
 
 interface VersionSelectorProps {
   menu: ReactNode;
+  redirect: (path: string) => void;
 }
 
 const VersionSelector = ({
-  menu
+  menu,
+  redirect
 }: VersionSelectorProps) => {
-  const history = useHistory();
-
   const dispatch = useDispatch();
   const onNewVersion = async () => {
     await dispatch(newVersion());
-    history.push('/desks'); //TODO
+    redirect('/desks');
   };
   const onLoadVersion = async (version: Room) => {
     await dispatch(loadVersion(version));
-    history.push('/desks'); //TODO
+    redirect('/desks');
   };
 
   return (

@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectExpanded } from './rootSlice';
 import {
   Switch,
-  Route
+  Route,
+  useHistory
 } from 'react-router-dom';
 import 'purecss';
 import './App.css';
@@ -17,10 +18,16 @@ import Hamburger from '../components/Hamburger';
 const App: FunctionComponent = () => {
   const expanded = useSelector(selectExpanded);
   const dispatch = useDispatch();
+  const history = useHistory();
+
   const onToggle = useCallback(
     () => dispatch(toggle()),
     [dispatch]
   );
+
+  const onRedirect = (path: string) => {
+    history.push(path);
+  }
 
   const menu = () => {
     return (
@@ -44,7 +51,7 @@ const App: FunctionComponent = () => {
         </Route>
 
         <Route path="/">
-          <VersionSelector menu={menu()} />
+          <VersionSelector menu={menu()} redirect={onRedirect} />
         </Route>
       </Switch>
     </div>

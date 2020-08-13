@@ -1,4 +1,4 @@
-import room, { addDesk, moveDesk, rotateDesk, removeDesk, addStudent, normalize, newVersion, removeStudent } from '../roomSlice';
+import room, { addDesk, moveDesk, rotateDesk, removeDesk, addStudent, normalize, newVersion, removeStudent, loadVersion } from '../roomSlice';
 import { buildRoom, addDesk as roomAddDesk, addStudent as roomAddStudent } from '../../models/room';
 import { mockStore } from '../../../tests/mockStore';
 import { length, toArray } from '../../utils/collection';
@@ -10,7 +10,7 @@ it('should use initial state', () => {
   ).toHaveProperty('id');
 });
 
-describe('add desk', () => {
+describe('addDesk', () => {
   it('should action', () => {
     const state = room({ current: buildRoom(), newVersion: true }, addDesk);
 
@@ -18,7 +18,7 @@ describe('add desk', () => {
   });
 });
 
-describe('move desk', () => {
+describe('moveDesk', () => {
   it('should move to new position', () => {
     const r = buildRoom();
     const desk = roomAddDesk(r);
@@ -29,7 +29,7 @@ describe('move desk', () => {
   });
 });
 
-describe('rotate desk', () => {
+describe('rotateDesk', () => {
   it('should rotate to new angle', () => {
     const r = buildRoom();
     const desk = roomAddDesk(r);
@@ -39,7 +39,7 @@ describe('rotate desk', () => {
   });
 });
 
-describe('remove desk', () => {
+describe('removeDesk', () => {
   it('should remove existing desk', () => {
     const r = buildRoom();
     const desk = roomAddDesk(r);
@@ -49,7 +49,7 @@ describe('remove desk', () => {
   });
 });
 
-describe('add student', () => {
+describe('addStudent', () => {
   it('action', () => {
     const state = room({ current: buildRoom(), newVersion: true }, addStudent);
 
@@ -57,7 +57,7 @@ describe('add student', () => {
   });
 });
 
-describe('remove desk', () => {
+describe('removeDesk', () => {
   it('should action', () => {
     const r = buildRoom();
     const student = roomAddStudent(r);
@@ -75,6 +75,16 @@ describe('remove desk', () => {
 
     expect(toArray(state.current.students)).toEqual([]);
     expect(toArray(state.current.desks)).toEqual([]);
+  });
+});
+
+describe('loadVersion', () => {
+  it('should action', () => {
+    const r = buildRoom();
+
+    const state = room({ current: buildRoom(), newVersion: true }, loadVersion(r));
+
+    expect(state.current).toEqual(r);
   });
 });
 
@@ -115,7 +125,7 @@ describe('normalize', () => {
   });
 });
 
-describe('new version', () => {
+describe('newVersion', () => {
   it('should state reset', async () => {
     const room = buildRoom();
     const store = mockStore({ app: { expanded: false, versions: [] }, room: { current: room, newVersion: false } });
