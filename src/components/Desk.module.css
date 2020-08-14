@@ -1,0 +1,101 @@
+.desk {
+  position: absolute;
+  width: 9em;
+}
+
+.icon {
+  text-align: center;
+}
+
+.icon > img {
+  vertical-align: bottom;
+  text-align: center;
+  width: 50%;
+}
+
+.container {
+  position: relative;
+  border: 2px solid black;
+  background-color: #ffffff;
+}
+
+.desk * {
+  pointer-events: none;
+  touch-action: none;
+}
+
+.desk[draggable="true"] {
+  cursor: grab;
+}
+
+.desk[draggable="true"].active {
+  cursor: grabbing;
+}
+
+.dragHandle {
+  float: left;
+  width: 22px;
+  height: 22px;
+}
+
+.dragHandle > img {
+  display: none;
+}
+
+.desk:hover .dragHandle > img {
+  display: block;
+}
+
+.deleteHandle {
+  float: right;
+  width: 22px;
+  height: 22px;
+}
+
+.deleteHandle > img {
+  display: none;
+  pointer-events: auto;
+  touch-action: auto;
+  cursor: pointer;
+}
+
+.desk:hover .deleteHandle > img {
+  display: block;
+}
+
+.name {
+  clear: both;
+  text-align: center;
+  padding: 1rem 2rem;
+}
+
+.rotateHandle {
+  float: right;
+  width: 22px;
+  height: 22px;
+}
+
+.rotateHandle > img {
+  display: none;
+  pointer-events: auto;
+  touch-action: auto;
+}
+
+.desk:hover .rotateHandle > img,
+.rotateHandle.active > img {
+  display: block;
+}
+
+.clear {
+  clear: both;
+}
+
+@media screen {
+  .container {
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .container:hover {
+    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.2);
+  }
+}
