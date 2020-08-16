@@ -34,13 +34,16 @@ const eventCoordinates = (
   event: ReactMouseEvent | ReactDragEvent | ReactTouchEvent | MouseEvent | TouchEvent,
   changedTouches: boolean = false
 ): Coordinates => {
-  if (event instanceof TouchEvent) {
-    const touchList: TouchList = changedTouches ? event.changedTouches : event.touches;
+  // Hack to check what type of event
+  if (typeof (event as TouchEvent).touches !== 'undefined') {
+    const _event = event as TouchEvent;
+    const touchList: TouchList = changedTouches ? _event.changedTouches : _event.touches;
     return { x: touchList[0].clientX, y: touchList[0].clientY };
-  } else if (event instanceof DragEvent) {
-    return { x: event.clientX, y: event.clientY };
+  } else if (typeof (event as MouseEvent).clientX !== 'undefined') {
+    const _event = event as DragEvent;
+    return { x: _event.clientX, y: _event.clientY };
   } else {
-    throw new Error('Invalid argument');
+    throw new Error(`Invalid argument: ${event}`);
   }
 };
 
@@ -124,15 +127,15 @@ const Desk = ({
 
       //Remove listeners
       document.body.removeEventListener(
-        "mousemove",
+        'mousemove',
         rotating.events.move
       );
-      document.body.removeEventListener("mouseup", rotating.events.up);
+      document.body.removeEventListener('mouseup', rotating.events.up);
       document.body.removeEventListener(
-        "touchmove",
+        'touchmove',
         rotating.events.move
       );
-      document.body.removeEventListener("touchend", rotating.events.up);
+      document.body.removeEventListener('touchend', rotating.events.up);
 
       // Reset object
       setRotating(null);
@@ -178,7 +181,7 @@ const Desk = ({
     event.stopPropagation();
 
     // Setup object of data used for rotating
-    setRotating({
+    const rotating = {
       angle: desk.angle,
       rotation: 0.0,
       start: 0.0,
@@ -190,22 +193,18 @@ const Desk = ({
         x: rect.left + rect.width / 2,
         y: rect.top + rect.height / 2
       }
-    });
-
-    // Appease TypeScript by checking for the null
-    if(!rotating) {
-      throw new Error('Rotating data is missing');
-    }
+    };
+    setRotating(rotating);
 
     const x = clientX - rotating.center.x,
       y = clientY - rotating.center.y;
     rotating.start = RADIANS_TO_DEGREES * Math.atan2(y, x);
 
     //Add listeners to entire document
-    document.body.addEventListener("mousemove", rotating.events.move);
-    document.body.addEventListener("mouseup", rotating.events.up);
-    document.body.addEventListener("touchmove", rotating.events.move);
-    document.body.addEventListener("touchend", rotating.events.up);
+    document.body.addEventListener('mousemove', rotating.events.move);
+    document.body.addEventListener('mouseup', rotating.events.up);
+    document.body.addEventListener('touchmove', rotating.events.move);
+    document.body.addEventListener('touchend', rotating.events.up);
   };
 
   // Create styles and classes for based on state
