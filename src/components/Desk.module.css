@@ -24,11 +24,15 @@
   touch-action: none;
 }
 
-.desk[draggable="true"] {
+.editable {
+  user-select: none;
+}
+
+.desk.editable {
   cursor: grab;
 }
 
-.desk[draggable="true"].active {
+.desk.editable.active {
   cursor: grabbing;
 }
 

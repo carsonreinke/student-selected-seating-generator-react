@@ -1,11 +1,31 @@
 import React, { ReactNode } from 'react';
 import Header from '../components/Header';
+import Room from '../components/Room';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCurrentRoom } from '../app/rootSlice';
+import { moveDesk, rotateDesk, removeDesk } from '../app/roomSlice';
 
 interface DeskEditorProps {
   menu: ReactNode;
 }
 
 export const DeskEditor = ({ menu }: DeskEditorProps) => {
+  const dispatch = useDispatch();
+  const room = useSelector(selectCurrentRoom);
+
+  const onEditName = () => {
+    //TODO
+  };
+  const onMoveDesk = (id: string, x: number, y: number) => {
+    dispatch(moveDesk(id, x, y));
+  };
+  const onRotateDesk = (id: string, angle: number) => {
+    dispatch(rotateDesk(id, angle));
+  };
+  const onRemoveDesk = (id: string) => {
+    dispatch(removeDesk(id));
+  };
+
   return (
     <div className="view-desk-editor">
       {menu}
@@ -33,7 +53,7 @@ export const DeskEditor = ({ menu }: DeskEditorProps) => {
         }
       </nav>
       <main>
-        {/*<Room editable />*/}
+        <Room room={room} editable={true} editName={onEditName} moveDesk={onMoveDesk} rotateDesk={onRotateDesk} removeDesk={onRemoveDesk} />
       </main>
     </div>
   );

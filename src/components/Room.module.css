@@ -1,0 +1,49 @@
+.room {
+  left: 0;
+  top: 0;
+  margin-left: 200px;
+  width: calc(100% - 200px);
+  height: 100%;
+  position: absolute;
+}
+
+.name {
+  text-align: center;
+}
+
+.name h2 {
+  display: inline-block;
+}
+
+.name h2[contenteditable="true"] {
+  background-image: url("../assets/images/edit.svg");
+  background-repeat: no-repeat;
+  background-position-x: right;
+  background-position-y: center;
+  outline-color: rgba(0, 0, 0, 0.2);
+  outline-style: dashed;
+  outline-width: 2px;
+  padding-right: 30px;
+  margin-right: 0;
+}
+
+.name h2[contenteditable="true"]:focus {
+  background-image: none;
+  outline-style: none;
+  padding-right: 0;
+  margin-right: 30px;
+}
+
+@media (max-width: 768px) {
+  .room {
+    margin: 0;
+    width: 100%;
+  }
+}
+
+@media print {
+  .room {
+    margin: 0;
+    width: 100%;
+  }
+}
