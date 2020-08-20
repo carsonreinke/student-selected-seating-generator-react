@@ -10,6 +10,9 @@ interface Callbacks {
   finish: InternalCallback;
 };
 
+// Dragging effect using trigger and event callbacks
+//
+// Based on https://overreacted.io/making-setinterval-declarative-with-react-hooks/
 const useDrag: (
   externalCallback: ExternalCallback
 ) => ExternalTrigger = (callback) => {
@@ -36,7 +39,6 @@ const useDrag: (
       finish: finishCallback
     };
   });
-
 
   useEffect(() => {
     // If not dragging, don't setup any events

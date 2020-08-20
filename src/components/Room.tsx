@@ -21,13 +21,25 @@ const Room = ({
   removeDesk,
   editName
 }: RoomProps) => {
-  const onBlur = (event: FocusEvent) => {
-    editName((event.target as HTMLElement).innerText);
-  };
-  const onKeyDown = (event: KeyboardEvent) => {
-    event.preventDefault();
-    (event.target as HTMLElement).blur();
-  };
+  let onBlur, onKeyDown;
+
+  if (editable) {
+    onBlur = (event: FocusEvent) => {
+      editName((event.target as HTMLElement).innerText);
+    };
+    onKeyDown = (event: KeyboardEvent) => {
+      // Ignore everything except "Enter"
+      if(event.keyCode !== 13) {
+        return;
+      }
+
+      event.preventDefault();
+      (event.target as HTMLElement).blur();
+    };
+  }
+  else {
+    onBlur = onKeyDown = () => { };
+  }
 
   return (
     <div className={styles.room}>

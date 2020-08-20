@@ -73,7 +73,6 @@ const Desk = ({
       return;
     }
 
-    const element = event.target as HTMLElement;
     const clientCoordinates = eventCoordinates(event, true);
     const _dragging = Object.assign({}, dragging);
 
