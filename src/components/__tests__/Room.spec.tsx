@@ -6,14 +6,14 @@ import { buildRoom, addDesk, addStudent } from '../../models/room';
 describe('render', () => {
   it('should render editable', () => {
     const room = buildRoom();
-    const results = render(<Room editable={true} room={room} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} />);
+    const results = render(<Room editable={true} room={room} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} editDimension={jest.fn()} deskEditDimension={jest.fn()} />);
 
     expect(results.getByText(room.name)).toBeInTheDocument();
   });
 
   it('should render uneditable', () => {
     const room = buildRoom();
-    const results = render(<Room editable={false} room={room} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} />);
+    const results = render(<Room editable={false} room={room} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} editDimension={jest.fn()} deskEditDimension={jest.fn()} />);
 
     expect(results.getByText(room.name)).toBeInTheDocument();
   });
@@ -22,7 +22,7 @@ describe('render', () => {
     const room = buildRoom();
     addDesk(room);
 
-    const results = render(<Room editable={false} room={room} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} />);
+    const results = render(<Room editable={false} room={room} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} editDimension={jest.fn()} deskEditDimension={jest.fn()} />);
 
     expect(results.getByText('Student')).toBeInTheDocument();
   });
@@ -31,7 +31,7 @@ describe('render', () => {
     const room = buildRoom();
     [...Array(3)].forEach(() => addDesk(room));
 
-    const results = render(<Room editable={false} room={room} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} />);
+    const results = render(<Room editable={false} room={room} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} editDimension={jest.fn()} deskEditDimension={jest.fn()} />);
 
     expect(results.getAllByText('Student')).toHaveLength(3);
   });
@@ -44,7 +44,7 @@ describe('render', () => {
 
     room.desks.students[desk.id].push(student.id);
 
-    const results = render(<Room editable={false} room={room} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} />);
+    const results = render(<Room editable={false} room={room} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} editDimension={jest.fn()} deskEditDimension={jest.fn()} />);
 
     expect(results.getByText(student.name)).toBeInTheDocument();
   });
@@ -54,7 +54,7 @@ describe('editName', () => {
   it('should allow editing of name', () => {
     const room = buildRoom();
     const editName = jest.fn();
-    const results = render(<Room editable={false} room={room} editName={editName} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} />);
+    const results = render(<Room editable={false} room={room} editName={editName} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} editDimension={jest.fn()} deskEditDimension={jest.fn()} />);
 
     fireEvent.focus(results.getByText(room.name));
     fireEvent.blur(results.getByText(room.name));
@@ -65,11 +65,20 @@ describe('editName', () => {
   it('should not do anything when uneditable', () => {
     const room = buildRoom();
     const editName = jest.fn();
-    const results = render(<Room editable={true} room={room} editName={editName} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} />);
+    const results = render(<Room editable={true} room={room} editName={editName} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} editDimension={jest.fn()} deskEditDimension={jest.fn()} />);
 
     fireEvent.focus(results.getByText(room.name));
     fireEvent.keyDown(results.getByText(room.name), { keyCode: 13 });
 
     wait(() => expect(editName).toHaveBeenCalled());
+  });
+});
+
+describe('editDimension', () => {
+  it('should call edit dimension when resized', () => {
+    const editDimension = jest.fn();
+    const results = render(<Room editable={true} room={buildRoom()} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} editDimension={editDimension} deskEditDimension={jest.fn()} />);
+
+    wait(() => expect(editDimension).toHaveBeenCalled());
   });
 });

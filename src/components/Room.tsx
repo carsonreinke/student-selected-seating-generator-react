@@ -13,7 +13,7 @@ interface RoomProps {
   rotateDesk: (id: string, angle: number) => void;
   removeDesk: (id: string) => void;
   editName: (name: string) => void;
-  editDimension: (rect: Dimension) => void;
+  editDimension?: (rect: Dimension) => void;
   deskEditDimension: (id: string, rect: Dimension) => void;
 };
 
@@ -50,6 +50,10 @@ const Room = ({
 
   // Provide dimensions to callback
   useEffect(() => {
+    if (!editDimension) {
+      return;
+    }
+
     const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
         editDimension(entry.contentRect);

@@ -56,7 +56,7 @@ interface DeskProps {
   move: (id: string, x: number, y: number) => void;
   rotate: (id: string, angle: number) => void;
   remove: (id: string) => void;
-  editDimension: (id: string, rect: Dimension) => void;
+  editDimension?: (id: string, rect: Dimension) => void;
 };
 
 const Desk = ({
@@ -213,6 +213,10 @@ const Desk = ({
 
   // Provide dimensions to callback
   useEffect(() => {
+    if(!editDimension) {
+      return;
+    }
+
     const observer = new ResizeObserver((entries) => {
       for (let entry of entries) {
         editDimension(desk.id, entry.contentRect);

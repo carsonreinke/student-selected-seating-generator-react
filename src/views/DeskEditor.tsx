@@ -1,9 +1,9 @@
-import React, { ReactNode, useState, useCallback } from 'react';
+import React, { ReactNode, useState, useCallback, useEffect } from 'react';
 import Header from '../components/Header';
 import Room from '../components/Room';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCurrentRoom, selectDeskCount, selectAllDesks } from '../app/rootSlice';
-import { moveDesk, rotateDesk, removeDesk, editName, addDesk } from '../app/roomSlice';
+import { selectCurrentRoom, selectDeskCount, selectAllDesks, selectNewVersion } from '../app/rootSlice';
+import { moveDesk, rotateDesk, removeDesk, editName, addDesk, toggleNewVersion } from '../app/roomSlice';
 import startOver from '../assets/images/start-over.svg';
 import forward from '../assets/images/forward.svg';
 import add from '../assets/images/add.svg';
@@ -21,10 +21,12 @@ export const DeskEditor = ({
 }: DeskEditorProps) => {
   const dispatch = useDispatch();
   const [roomDimension, setRoomDimension] = useState<Dimension>({ width: 0, height: 0 }),
-    [desksDimension, setDesksDimension] = useState<{ [id: string]: Dimension }>({});
+    [desksDimension, setDesksDimension] = useState<{ [id: string]: Dimension }>({}),
+    [readyToArrange, setReadyToArrange] = useState([false, false]);
   const room = useSelector(selectCurrentRoom),
     deskCount = useSelector(selectDeskCount),
-    allDesks = useSelector(selectAllDesks);
+    allDesks = useSelector(selectAllDesks),
+    newVersion = useSelector(selectNewVersion);
 
   // Internal handlers
   const onStartOver = () => {
@@ -36,7 +38,7 @@ export const DeskEditor = ({
   const onAddDesk = () => {
     dispatch(addDesk());
   };
-  const onArrange = () => {
+  const onArrange = useCallback(() => {
     const containerRect = roomDimension;
 
     // Make there are desks to arrange
@@ -79,7 +81,7 @@ export const DeskEditor = ({
         row = Math.floor(index / columns);
       dispatch(moveDesk(desk.id, column * width + left, row * height + top));
     });
-  };
+  }, [dispatch, roomDimension, desksDimension, deskCount, allDesks]);
 
   // External handlers
   const onEditName = (name: string) => {
@@ -89,12 +91,18 @@ export const DeskEditor = ({
   // Dimension call backs
   const onEditDimension = useCallback((rect: Dimension) => {
     setRoomDimension(rect);
+    setReadyToArrange(previous => {
+      return [true, previous[1]];
+    });
   }, []);
   const onDeskEditDimension = useCallback((id: string, rect: Dimension) => {
-    setDesksDimension((previous) => {
+    setDesksDimension(previous => {
       const dimensions = Object.assign({}, previous);
       dimensions[id] = rect;
       return dimensions;
+    });
+    setReadyToArrange(previous => {
+      return [previous[0], true];
     });
   }, []);
 
@@ -110,6 +118,14 @@ export const DeskEditor = ({
     setDesksDimension(dimensions);
     dispatch(removeDesk(id));
   };
+
+  // Automatically arrange new room versions and after specifically state automatic arrangement has happened
+  useEffect(() => {
+    if (newVersion && readyToArrange.reduce((a, b) => a && b)) {
+      onArrange();
+      dispatch(toggleNewVersion(false));
+    }
+  }, [dispatch, readyToArrange, onArrange, newVersion])
 
   return (
     <div className="view-desk-editor">

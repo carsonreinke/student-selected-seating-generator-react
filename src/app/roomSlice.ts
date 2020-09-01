@@ -90,7 +90,7 @@ const roomSlice = createSlice({
   }
 });
 
-export const { loadVersion, removeDesk, addDesk, removeStudent, addStudent, moveDesk, rotateDesk, editName } = roomSlice.actions;
+export const { loadVersion, removeDesk, addDesk, removeStudent, addStudent, moveDesk, rotateDesk, editName, toggleNewVersion } = roomSlice.actions;
 
 export default roomSlice.reducer;
 
