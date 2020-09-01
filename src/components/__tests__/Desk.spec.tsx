@@ -3,6 +3,7 @@ import Desk from '../Desk';
 import { render, fireEvent, wait } from '@testing-library/react';
 import { buildRoom, addDesk } from '../../models/room';
 import ResizeObserver from 'resize-observer-polyfill';
+import { act } from 'react-dom/test-utils';
 
 jest.mock('resize-observer-polyfill', () => {
   return jest.fn().mockImplementation((callback) => {
@@ -13,7 +14,7 @@ jest.mock('resize-observer-polyfill', () => {
   });
 });
 
-beforeEach(() => {
+afterEach(() => {
   ResizeObserver.mockClear();
 });
 
@@ -83,9 +84,9 @@ describe('rotate', () => {
     const rotate = jest.fn();
     const result = render(<Desk editable={true} desk={desk} move={jest.fn()} remove={jest.fn()} rotate={rotate} editDimension={jest.fn()} />);
 
-    fireEvent.mouseDown(result.getByAltText('Rotate Me'), {clientX: 0, clientY: 0});
-    fireEvent.mouseMove(result.getByAltText('Rotate Me'), {clientX: 1, clientY: 1});
-    fireEvent.mouseUp(result.getByAltText('Rotate Me'), {clientX: 2, clientY: 2});
+    fireEvent.mouseDown(result.getByAltText('Rotate Me'), { clientX: 0, clientY: 0 });
+    fireEvent.mouseMove(result.getByAltText('Rotate Me'), { clientX: 1, clientY: 1 });
+    fireEvent.mouseUp(result.getByAltText('Rotate Me'), { clientX: 2, clientY: 2 });
 
     await wait(() => expect(rotate).toHaveBeenCalledWith(desk.id, 45));
   });
@@ -100,12 +101,14 @@ describe('editDimension', () => {
     const callback = ResizeObserver.mock.calls[0][0];
 
     // Manually trigger callback instead of event
-    callback([{
-      target: results.container.firstChild,
-      contentRect: {
-        width: 1, height: 1
-      }
-    }]);
+    act(() => {
+      callback([{
+        target: results.container.firstChild,
+        contentRect: {
+          width: 1, height: 1
+        }
+      }]);
+    });
 
     await wait(() => expect(editDimension).toHaveBeenCalled());
   });

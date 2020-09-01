@@ -13,7 +13,7 @@ jest.mock('resize-observer-polyfill', () => {
   });
 });
 
-beforeEach(() => {
+afterEach(() => {
   ResizeObserver.mockClear();
 });
 
