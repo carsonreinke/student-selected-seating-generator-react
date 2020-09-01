@@ -2,6 +2,20 @@ import React from 'react';
 import Desk from '../Desk';
 import { render, fireEvent, wait } from '@testing-library/react';
 import { buildRoom, addDesk } from '../../models/room';
+import ResizeObserver from 'resize-observer-polyfill';
+
+jest.mock('resize-observer-polyfill', () => {
+  return jest.fn().mockImplementation((callback) => {
+    return {
+      observe: jest.fn(),
+      disconnect: jest.fn()
+    };
+  });
+});
+
+beforeEach(() => {
+  ResizeObserver.mockClear();
+});
 
 describe('render', () => {
   it('should render editable', () => {
@@ -50,20 +64,21 @@ describe('remove', () => {
 });
 
 describe('move', () => {
-  it('should call move once done dragging', () => {
+  it('should call move once done dragging', async () => {
+    const name = "Testing"
     const desk = addDesk(buildRoom());
     const move = jest.fn();
-    const result = render(<Desk editable={true} desk={desk} move={move} remove={jest.fn()} rotate={jest.fn()} editDimension={jest.fn()} />);
+    const result = render(<Desk editable={true} name={name} desk={desk} move={move} remove={jest.fn()} rotate={jest.fn()} editDimension={jest.fn()} />);
 
-    fireEvent.touchStart(result.getByAltText('Drag Me'), { touches: [{ clientX: 1, clientY: 1 }] });
-    fireEvent.touchEnd(result.getByAltText('Drag Me'), { changedTouches: [{ clientX: 1, clientY: 1 }] });
+    fireEvent.touchStart(result.getByTitle(name), { touches: [{ clientX: 1, clientY: 1 }] });
+    fireEvent.touchEnd(result.getByTitle(name), { changedTouches: [{ clientX: 2, clientY: 2 }] });
 
-    wait(() => expect(move).toHaveBeenCalledWith(desk.id, 1, 1));
+    await wait(() => expect(move).toHaveBeenCalledWith(desk.id, 0, 0));
   });
 });
 
 describe('rotate', () => {
-  it('should call rotate once done rotating', () => {
+  it('should call rotate once done rotating', async () => {
     const desk = addDesk(buildRoom());
     const rotate = jest.fn();
     const result = render(<Desk editable={true} desk={desk} move={jest.fn()} remove={jest.fn()} rotate={rotate} editDimension={jest.fn()} />);
@@ -72,16 +87,26 @@ describe('rotate', () => {
     fireEvent.mouseMove(result.getByAltText('Rotate Me'), {clientX: 1, clientY: 1});
     fireEvent.mouseUp(result.getByAltText('Rotate Me'), {clientX: 2, clientY: 2});
 
-    wait(() => expect(rotate).toHaveBeenCalledWith(desk.id, 1, 1));
-    wait(() => expect(rotate).toHaveBeenCalledWith(desk.id, 2, 2));
+    await wait(() => expect(rotate).toHaveBeenCalledWith(desk.id, 45));
   });
 });
 
 describe('editDimension', () => {
-  it('should call edit dimension when resized', () => {
+  it('should call edit dimension when resized', async () => {
     const editDimension = jest.fn();
-    const result = render(<Desk editable={true} desk={addDesk(buildRoom())} move={jest.fn()} remove={jest.fn()} rotate={jest.fn()} editDimension={editDimension} />);
+    const results = render(<Desk editable={true} desk={addDesk(buildRoom())} move={jest.fn()} remove={jest.fn()} rotate={jest.fn()} editDimension={editDimension} />);
 
-    wait(() => expect(editDimension).toHaveBeenCalled());
+    expect(ResizeObserver).toHaveBeenCalled();
+    const callback = ResizeObserver.mock.calls[0][0];
+
+    // Manually trigger callback instead of event
+    callback([{
+      target: results.container.firstChild,
+      contentRect: {
+        width: 1, height: 1
+      }
+    }]);
+
+    await wait(() => expect(editDimension).toHaveBeenCalled());
   });
 });

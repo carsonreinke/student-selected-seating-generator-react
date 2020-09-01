@@ -2,6 +2,20 @@ import React from 'react';
 import Room from '../Room';
 import { render, fireEvent, wait } from '@testing-library/react';
 import { buildRoom, addDesk, addStudent } from '../../models/room';
+import ResizeObserver from 'resize-observer-polyfill';
+
+jest.mock('resize-observer-polyfill', () => {
+  return jest.fn().mockImplementation((callback) => {
+    return {
+      observe: jest.fn(),
+      disconnect: jest.fn()
+    };
+  });
+});
+
+beforeEach(() => {
+  ResizeObserver.mockClear();
+});
 
 describe('render', () => {
   it('should render editable', () => {
@@ -62,7 +76,7 @@ describe('editName', () => {
     expect(editName).not.toHaveBeenCalled();
   });
 
-  it('should not do anything when uneditable', () => {
+  it('should not do anything when uneditable', async () => {
     const room = buildRoom();
     const editName = jest.fn();
     const results = render(<Room editable={true} room={room} editName={editName} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} editDimension={jest.fn()} deskEditDimension={jest.fn()} />);
@@ -70,15 +84,26 @@ describe('editName', () => {
     fireEvent.focus(results.getByText(room.name));
     fireEvent.keyDown(results.getByText(room.name), { keyCode: 13 });
 
-    wait(() => expect(editName).toHaveBeenCalled());
+    await wait(() => expect(editName).not.toHaveBeenCalled());
   });
 });
 
 describe('editDimension', () => {
-  it('should call edit dimension when resized', () => {
+  it('should call edit dimension when resized', async () => {
     const editDimension = jest.fn();
     const results = render(<Room editable={true} room={buildRoom()} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} editDimension={editDimension} deskEditDimension={jest.fn()} />);
 
-    wait(() => expect(editDimension).toHaveBeenCalled());
+    expect(ResizeObserver).toHaveBeenCalled();
+    const callback = ResizeObserver.mock.calls[0][0];
+
+    // Manually trigger callback instead of event
+    callback([{
+      target: results.container.firstChild,
+      contentRect: {
+        width: 1, height: 1
+      }
+    }]);
+
+    await wait(() => expect(editDimension).toHaveBeenCalled());
   });
 });

@@ -32,7 +32,7 @@ export const DeskEditor = ({
   // Redirect back if we have nothing in room
   useEffect(() => {
     if (isEmpty) {
-      return redirect('/');
+      onStartOver();
     }
   });
 

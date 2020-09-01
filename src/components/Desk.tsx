@@ -217,7 +217,7 @@ const Desk = ({
       return;
     }
 
-    const observer = new ResizeObserver((entries) => {
+    const observer = new ResizeObserver(entries => {
       for (let entry of entries) {
         editDimension(desk.id, entry.contentRect);
       }
@@ -252,7 +252,8 @@ const Desk = ({
       className={mainClasses}
       style={style}
       onMouseDown={onDragStart}
-      onTouchStart={onDragStart}>
+      onTouchStart={onDragStart}
+      title={name}>
       <div className={styles.icon}>
         <img alt="" src={deskImage} />
       </div>
