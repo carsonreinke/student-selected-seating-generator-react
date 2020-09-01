@@ -7,6 +7,7 @@ import App from '../App';
 import { RootState } from '../rootSlice';
 import { buildRoom } from '../../models/room';
 import { toggle } from '../appSlice';
+import { addDesk } from '../../models/room';
 
 const commonTests = (path: string, text: string) => {
   describe(`route ${path}`, () => {
@@ -14,7 +15,9 @@ const commonTests = (path: string, text: string) => {
       store: ReturnType<typeof mockStore>;
 
     beforeEach(() => {
-      store = mockStore<RootState>({ app: { expanded: false, versions: [] }, room: { current: buildRoom(), newVersion: true } });
+      const room = buildRoom();
+      addDesk(room);
+      store = mockStore<RootState>({ app: { expanded: false, versions: [] }, room: { current: room, newVersion: true } });
       result = render(<Provider store={store}><MemoryRouter initialEntries={[path]}><App /></MemoryRouter></Provider>);
     })
 

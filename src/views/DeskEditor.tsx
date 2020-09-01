@@ -2,7 +2,7 @@ import React, { ReactNode, useState, useCallback, useEffect } from 'react';
 import Header from '../components/Header';
 import Room from '../components/Room';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCurrentRoom, selectDeskCount, selectAllDesks, selectNewVersion } from '../app/rootSlice';
+import { selectCurrentRoom, selectDeskCount, selectAllDesks, selectNewVersion, selectIsEmpty } from '../app/rootSlice';
 import { moveDesk, rotateDesk, removeDesk, editName, addDesk, toggleNewVersion } from '../app/roomSlice';
 import startOver from '../assets/images/start-over.svg';
 import forward from '../assets/images/forward.svg';
@@ -26,7 +26,15 @@ export const DeskEditor = ({
   const room = useSelector(selectCurrentRoom),
     deskCount = useSelector(selectDeskCount),
     allDesks = useSelector(selectAllDesks),
-    newVersion = useSelector(selectNewVersion);
+    newVersion = useSelector(selectNewVersion),
+    isEmpty = useSelector(selectIsEmpty);
+
+  // Redirect back if we have nothing in room
+  useEffect(() => {
+    if (isEmpty) {
+      return redirect('/');
+    }
+  });
 
   // Internal handlers
   const onStartOver = () => {
