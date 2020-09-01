@@ -51,7 +51,7 @@ describe('render', () => {
 });
 
 describe('editName', () => {
-  it('should ', () => {
+  it('should allow editing of name', () => {
     const room = buildRoom();
     const editName = jest.fn();
     const results = render(<Room editable={false} room={room} editName={editName} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} />);

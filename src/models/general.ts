@@ -11,3 +11,8 @@ export interface Data<T extends CoreBase> {
 export interface Relationship {
   [index: string]: string[];
 }
+
+export interface Dimension {
+  width: number;
+  height: number;
+}

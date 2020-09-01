@@ -21,6 +21,12 @@ interface RotateDeskPayload {
   angle: number;
 }
 
+//type EditDimensionPayload = Dimension;
+interface EditDimensionPayload {
+  width: number;
+  height: number;
+}
+
 const initialState: RoomState = {
   current: buildRoom(),
   newVersion: true
@@ -77,11 +83,14 @@ const roomSlice = createSlice({
     },
     toggleNewVersion: (state: RoomState, action: PayloadAction<boolean>) => {
       state.newVersion = action.payload;
+    },
+    editName: (state: RoomState, action: PayloadAction<string>) => {
+      state.current.name = action.payload;
     }
   }
 });
 
-export const { loadVersion, removeDesk, addDesk, removeStudent, addStudent, moveDesk, rotateDesk } = roomSlice.actions;
+export const { loadVersion, removeDesk, addDesk, removeStudent, addStudent, moveDesk, rotateDesk, editName } = roomSlice.actions;
 
 export default roomSlice.reducer;
 

@@ -39,7 +39,7 @@ const App: FunctionComponent = () => {
     <div className={expanded ? 'expanded' : ''}>
       <Switch>
         <Route path="/desks" >
-          <DeskEditor menu={menu()} />
+          <DeskEditor menu={menu()} redirect={onRedirect} />
         </Route>
 
         <Route path="/students">

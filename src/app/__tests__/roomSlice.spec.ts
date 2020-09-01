@@ -1,4 +1,4 @@
-import room, { addDesk, moveDesk, rotateDesk, removeDesk, addStudent, normalize, newVersion, removeStudent, loadVersion } from '../roomSlice';
+import room, { addDesk, moveDesk, rotateDesk, removeDesk, addStudent, normalize, newVersion, removeStudent, loadVersion, editName } from '../roomSlice';
 import { buildRoom, addDesk as roomAddDesk, addStudent as roomAddStudent } from '../../models/room';
 import { mockStore } from '../../../tests/mockStore';
 import { length, toArray } from '../../utils/collection';
@@ -136,5 +136,14 @@ describe('newVersion', () => {
     expect(types).toContain('room/clearRoom');
     expect(types).toContain('room/toggleNewVersion');
     expect(types).toContain(addDesk.type);
+  });
+});
+
+describe('editName', () => {
+  it('should set name', () => {
+    const name = 'Testing';
+    const state = room({ current: buildRoom(), newVersion: true }, editName(name));
+
+    expect(state.current.name).toEqual(name);
   });
 });

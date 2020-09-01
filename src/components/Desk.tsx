@@ -1,11 +1,13 @@
-import React, { useState, DragEvent as ReactDragEvent, TouchEvent as ReactTouchEvent, MouseEvent as ReactMouseEvent } from 'react';
+import React, { useState, DragEvent as ReactDragEvent, TouchEvent as ReactTouchEvent, MouseEvent as ReactMouseEvent, useEffect, useRef } from 'react';
 import { CoreDesk } from '../models/desks';
+import { Dimension } from '../models/general';
 import styles from './Desk.module.css';
 import deskImage from '../assets/images/desk.svg';
 import dragImage from '../assets/images/drag.svg';
 import deleteImage from '../assets/images/delete.svg';
 import rotateImage from '../assets/images/rotate.svg';
 import useDrag from '../utils/use-drag';
+import ResizeObserver from 'resize-observer-polyfill';
 
 const RADIANS_TO_DEGREES = 180.0 / Math.PI;
 
@@ -54,6 +56,7 @@ interface DeskProps {
   move: (id: string, x: number, y: number) => void;
   rotate: (id: string, angle: number) => void;
   remove: (id: string) => void;
+  editDimension: (id: string, rect: Dimension) => void;
 };
 
 const Desk = ({
@@ -62,8 +65,10 @@ const Desk = ({
   name = 'Student',
   move,
   rotate,
-  remove
+  remove,
+  editDimension
 }: DeskProps) => {
+  const container = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState<DragMeta | null>(null),
     [rotating, setRotating] = useState<RotationMeta | null>(null);
 
@@ -206,6 +211,18 @@ const Desk = ({
     rotateTrigger();
   };
 
+  // Provide dimensions to callback
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        editDimension(desk.id, entry.contentRect);
+      }
+    });
+    observer.observe(container.current as HTMLElement);
+
+    return () => observer.disconnect();
+  }, [editDimension, desk.id]);
+
   // Create styles and classes for based on state
   const style = {
     left: (dragging ? dragging.x : desk.x) + 'px',
@@ -227,6 +244,7 @@ const Desk = ({
 
   return (
     <div
+      ref={container}
       className={mainClasses}
       style={style}
       onMouseDown={onDragStart}
