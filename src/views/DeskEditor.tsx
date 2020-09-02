@@ -3,7 +3,7 @@ import Header from '../components/Header';
 import Room from '../components/Room';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentRoom, selectDeskCount, selectAllDesks, selectNewVersion, selectIsEmpty } from '../app/rootSlice';
-import { moveDesk, rotateDesk, removeDesk, editName, addDesk, toggleNewVersion } from '../app/roomSlice';
+import { moveDesk, rotateDesk, removeDesk, editRoomName, addDesk, toggleNewVersion } from '../app/roomSlice';
 import startOver from '../assets/images/start-over.svg';
 import forward from '../assets/images/forward.svg';
 import add from '../assets/images/add.svg';
@@ -93,7 +93,7 @@ export const DeskEditor = ({
 
   // External handlers
   const onEditName = (name: string) => {
-    dispatch(editName(name));
+    dispatch(editRoomName(name));
   };
 
   // Dimension call backs

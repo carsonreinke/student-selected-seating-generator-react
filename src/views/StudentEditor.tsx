@@ -7,7 +7,7 @@ import forward from '../assets/images/forward.svg';
 import back from '../assets/images/back.svg';
 import Student from '../components/Student';
 import { toArray } from '../utils/collection';
-import { addPreference, removePreference, editStudentName } from '../app/roomSlice';
+import { addStudentPreference, removeStudentPreference, editStudentName } from '../app/roomSlice';
 
 interface StudentEditorProps {
   menu: ReactNode;
@@ -45,10 +45,10 @@ export const StudentEditor = ({
     dispatch(editStudentName({ id, name }));
   };
   const onAddPreference = (id: string, preference: string) => {
-    dispatch(addPreference({ id, preference }));
+    dispatch(addStudentPreference({ id, preference }));
   };
   const onRemovePreference = (id: string, preference: string) => {
-    dispatch(removePreference({ id, preference }));
+    dispatch(removeStudentPreference({ id, preference }));
   };
 
   return (

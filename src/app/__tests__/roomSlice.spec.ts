@@ -1,4 +1,4 @@
-import room, { addDesk, moveDesk, rotateDesk, removeDesk, addStudent, normalize, newVersion, removeStudent, loadVersion, editName, addPreference, removePreference, editStudentName } from '../roomSlice';
+import room, { addDesk, moveDesk, rotateDesk, removeDesk, addStudent, normalize, newVersion, removeStudent, loadVersion, editRoomName, addStudentPreference, removeStudentPreference, editStudentName } from '../roomSlice';
 import { buildRoom, addDesk as roomAddDesk, addStudent as roomAddStudent } from '../../models/room';
 import { mockStore } from '../../../tests/mockStore';
 import { length, toArray } from '../../utils/collection';
@@ -142,7 +142,7 @@ describe('newVersion', () => {
 describe('editName', () => {
   it('should set name', () => {
     const name = 'Testing';
-    const state = room({ current: buildRoom(), newVersion: true }, editName(name));
+    const state = room({ current: buildRoom(), newVersion: true }, editRoomName(name));
 
     expect(state.current.name).toEqual(name);
   });
@@ -154,7 +154,7 @@ describe('addPreference', () => {
     const s1 = roomAddStudent(r),
       s2 = roomAddStudent(r);
 
-    const state = room({ current: r, newVersion: true }, addPreference({id: s1.id, preference: s2.id}));
+    const state = room({ current: r, newVersion: true }, addStudentPreference({id: s1.id, preference: s2.id}));
 
     expect(state.current.students.preferences[s1.id]).toContain(s2.id);
   });
@@ -165,7 +165,7 @@ describe('addPreference', () => {
       s2 = roomAddStudent(r);
     r.students.preferences[s1.id].push(s2.id);
 
-    const state = room({ current: r, newVersion: true }, addPreference({id: s1.id, preference: s2.id}));
+    const state = room({ current: r, newVersion: true }, addStudentPreference({id: s1.id, preference: s2.id}));
 
     expect(state.current.students.preferences[s1.id].filter(id => id === s2.id)).toHaveLength(1);
   });
@@ -178,7 +178,7 @@ describe('removePreference', () => {
       s2 = roomAddStudent(r);
     r.students.preferences[s1.id].push(s2.id);
 
-    const state = room({ current: r, newVersion: true }, removePreference({id: s1.id, preference: s2.id}));
+    const state = room({ current: r, newVersion: true }, removeStudentPreference({id: s1.id, preference: s2.id}));
 
     expect(state.current.students.preferences[s1.id]).not.toContain(s2.id);
   });

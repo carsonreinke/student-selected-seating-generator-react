@@ -93,16 +93,16 @@ const roomSlice = createSlice({
     toggleNewVersion: (state: RoomState, action: PayloadAction<boolean>) => {
       state.newVersion = action.payload;
     },
-    editName: (state: RoomState, action: PayloadAction<string>) => {
+    editRoomName: (state: RoomState, action: PayloadAction<string>) => {
       state.current.name = action.payload;
     },
-    addPreference: (state: RoomState, action: PayloadAction<StudentPreferencePayload>) => {
+    addStudentPreference: (state: RoomState, action: PayloadAction<StudentPreferencePayload>) => {
       const preferences = state.current.students.preferences[action.payload.id];
       if(!preferences.includes(action.payload.preference)) {
         preferences.push(action.payload.preference);
       }
     },
-    removePreference: (state: RoomState, action: PayloadAction<StudentPreferencePayload>) => {
+    removeStudentPreference: (state: RoomState, action: PayloadAction<StudentPreferencePayload>) => {
       state.current.students.preferences[action.payload.id] =
         state.current.students.preferences[action.payload.id].filter(preference => preference !== action.payload.preference);
     },
@@ -120,10 +120,10 @@ export const {
   addStudent,
   moveDesk,
   rotateDesk,
-  editName,
+  editRoomName,
   toggleNewVersion,
-  addPreference,
-  removePreference,
+  addStudentPreference,
+  removeStudentPreference,
   editStudentName
 } = roomSlice.actions;
 
