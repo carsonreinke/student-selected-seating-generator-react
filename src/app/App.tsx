@@ -43,7 +43,7 @@ const App: FunctionComponent = () => {
         </Route>
 
         <Route path="/students">
-          <StudentEditor menu={menu()} />
+          <StudentEditor menu={menu()} redirect={onRedirect} />
         </Route>
 
         <Route path="/report">

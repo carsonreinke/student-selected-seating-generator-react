@@ -21,10 +21,19 @@ interface RotateDeskPayload {
   angle: number;
 }
 
-//type EditDimensionPayload = Dimension;
 interface EditDimensionPayload {
   width: number;
   height: number;
+}
+
+interface StudentPreferencePayload {
+  id: string;
+  preference: string;
+}
+
+interface StudentNameChange {
+  id: string;
+  name: string;
 }
 
 const initialState: RoomState = {
@@ -86,11 +95,37 @@ const roomSlice = createSlice({
     },
     editName: (state: RoomState, action: PayloadAction<string>) => {
       state.current.name = action.payload;
+    },
+    addPreference: (state: RoomState, action: PayloadAction<StudentPreferencePayload>) => {
+      const preferences = state.current.students.preferences[action.payload.id];
+      if(!preferences.includes(action.payload.preference)) {
+        preferences.push(action.payload.preference);
+      }
+    },
+    removePreference: (state: RoomState, action: PayloadAction<StudentPreferencePayload>) => {
+      state.current.students.preferences[action.payload.id] =
+        state.current.students.preferences[action.payload.id].filter(preference => preference !== action.payload.preference);
+    },
+    editStudentName: (state: RoomState, action: PayloadAction<StudentNameChange>) => {
+      state.current.students.data[action.payload.id].name = action.payload.name;
     }
   }
 });
 
-export const { loadVersion, removeDesk, addDesk, removeStudent, addStudent, moveDesk, rotateDesk, editName, toggleNewVersion } = roomSlice.actions;
+export const {
+  loadVersion,
+  removeDesk,
+  addDesk,
+  removeStudent,
+  addStudent,
+  moveDesk,
+  rotateDesk,
+  editName,
+  toggleNewVersion,
+  addPreference,
+  removePreference,
+  editStudentName
+} = roomSlice.actions;
 
 export default roomSlice.reducer;
 

@@ -1,0 +1,39 @@
+.student {
+  clear: both;
+  width: 100%;
+  padding: 0.5em;
+}
+
+.name {
+  float: left;
+  margin: 0.5em;
+  width: calc(35% - 2px - 1em);
+  border: 1px solid #000000;
+}
+
+.name input {
+  width: calc(100% - 10px);
+  min-height: 33px;
+  border: transparent solid 4px;
+  outline: none;
+}
+
+.multiselect {
+  float: right;
+  margin: 0.5em;
+  width: calc(65% - 1em);
+
+  --rmsc-main: #4285f4;
+  --rmsc-hover: rgba(0, 0, 0, 0.5);
+  --rmsc-selected: #e5e5e5;
+  --rmsc-border: #000000;
+  --rmsc-gray: rgba(0, 0, 0, 0.5);
+  --rmsc-bg: #ffffff;
+  --rmsc-p: 10px; /* Spacing */
+  --rmsc-radius: 0; /* Radius */
+  --rmsc-h: 44px; /* Height */
+}
+
+.multiselect ul li:hover {
+  color: #ffffff;
+}

@@ -41,5 +41,5 @@ const commonTests = (path: string, text: string) => {
 
 commonTests('/', 'Welcome');
 commonTests('/desks', 'Provide the arrangement of desks for the room.');
-commonTests('/students', 'Students TODO'); //TODO
+commonTests('/students', 'Provide the name of each student and their preferences.');
 commonTests('/report', 'Report TODO'); //TODO
