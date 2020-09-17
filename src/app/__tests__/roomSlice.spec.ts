@@ -4,6 +4,7 @@ import { mockStore } from '../../../tests/mockStore';
 import { length, toArray } from '../../utils/collection';
 import { RootState } from '../rootSlice';
 import BruteForceStrategy from '../../models/brute-force-strategy';
+import { assignStudent } from '../../models/desks';
 
 const mockStrategyArrange = jest.fn();
 jest.mock('../../models/brute-force-strategy', () => {
@@ -78,7 +79,7 @@ describe('removeDesk', () => {
     const r = buildRoom();
     const student = roomAddStudent(r);
     const desk = roomAddDesk(r);
-    r.desks.students[desk.id] = [student.id];
+    assignStudent(r, desk, student);
     const state = room({ current: r, newVersion: true }, removeStudent(student.id));
 
     expect(toArray(state.current.students)).toEqual([]);

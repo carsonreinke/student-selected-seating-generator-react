@@ -1,4 +1,4 @@
-import { Data, CoreBase } from "../models/general";
+import { Data, CoreBase } from '../models/general';
 
 /**
  * Find parent containing child relationship
@@ -7,9 +7,12 @@ import { Data, CoreBase } from "../models/general";
  * @param {string} childId
  * @return {string}
  */
-export function findInRelationship(relation: {[index: string]: string[]}, childId: string): string | null {
+export function findInRelationship(relation: { [index: string]: string | string[] | null }, childId: string): string | null {
+  let related;
+
   for (const parentId of Object.getOwnPropertyNames(relation)) {
-    if(relation[parentId].includes(childId)) {
+    related = relation[parentId];
+    if ((Array.isArray(related) && related.includes(childId)) || related === childId) {
       return parentId;
     }
   }

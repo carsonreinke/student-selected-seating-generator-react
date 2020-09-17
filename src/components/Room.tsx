@@ -72,10 +72,14 @@ const Room = ({
         <h2 contentEditable={editable} suppressContentEditableWarning={true} onBlur={onBlur} onKeyDown={onKeyDown}>{room.name}</h2>
       </div>
       {toArray(room.desks).map(desk => {
-        const student = room.students.data[room.desks.students[desk.id][0]];
+        let studentName;
+        const studentId = room.desks.student[desk.id];
+        if (studentId) {
+          studentName = room.students.data[studentId].name;
+        }
 
         return (
-          <Desk key={desk.id} desk={desk} editable={editable} name={student?.name} move={moveDesk} rotate={rotateDesk} remove={removeDesk} editDimension={deskEditDimension} />
+          <Desk key={desk.id} desk={desk} editable={editable} name={studentName} move={moveDesk} rotate={rotateDesk} remove={removeDesk} editDimension={deskEditDimension} />
         );
       })}
     </div>

@@ -7,6 +7,7 @@ import { render, fireEvent, wait } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import ResizeObserver from 'resize-observer-polyfill';
 import { act } from 'react-dom/test-utils';
+import { assignStudent } from '../../models/desks';
 
 jest.mock('resize-observer-polyfill', () => {
   return jest.fn().mockImplementation((callback) => {
@@ -40,7 +41,7 @@ describe('render', () => {
     const desk = addDesk(room);
     const student = addStudent(room);
     student.name = 'Student Testing';
-    room.desks.students[desk.id].push(student.id);
+    assignStudent(room, desk, student);
     const store = mockStore<RootState>({ app: { expanded: false, versions: [] }, room: { current: room, newVersion: true } });
     const result = render(<Provider store={store}><DeskEditor menu="" redirect={jest.fn()} /></Provider>);
 
@@ -79,7 +80,7 @@ describe('arrange', () => {
     const store = mockStore<RootState>({ app: { expanded: false, versions: [] }, room: { current: room, newVersion: true } });
     const result = render(<Provider store={store}><DeskEditor menu="" redirect={jest.fn()} /></Provider>);
 
-    await(() => expect(ResizeObserver).toHaveBeenCalledTimes(2));
+    await (() => expect(ResizeObserver).toHaveBeenCalledTimes(2));
     for (let index = 0; index < ResizeObserver.mock.calls.length; index++) {
       const callback = ResizeObserver.mock.calls[index][0];
       const size = index === 2 ? 500 : 100; // Yikes, hard to tell who is calling

@@ -2,6 +2,7 @@ import Strategy from './strategy';
 import { CoreStudent } from './students';
 import { Room } from './room';
 import { toArray } from '../utils/collection';
+import { assignStudent } from './desks';
 //import Combinatorics from 'js-combinatorics';
 
 export default class BruteForceStrategy extends Strategy {
@@ -35,9 +36,9 @@ export default class BruteForceStrategy extends Strategy {
    */
   assignDesks(room: Room, orderIndex: number[]) {
     orderIndex.forEach((studentIndex, deskIndex) => {
-      const deskId = toArray(room.desks)[deskIndex].id,
-        studentId = toArray(room.students)[studentIndex].id;
-      room.desks.students[deskId] = [studentId];
+      const desk = toArray(room.desks)[deskIndex];
+      const student = toArray(room.students)[studentIndex];
+      assignStudent(room, desk, student);
     });
   }
 
@@ -57,7 +58,7 @@ export default class BruteForceStrategy extends Strategy {
      *  Desk => Student
      * ]
      */
-    let orderIndex = [...Array(Object.keys(room.students.data).length)].map((_, index) =>  index);
+    let orderIndex = [...Array(Object.keys(room.students.data).length)].map((_, index) => index);
 
     //Initial assignment
     this.assignDesks(room, orderIndex);

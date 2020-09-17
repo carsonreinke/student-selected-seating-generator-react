@@ -5,6 +5,7 @@ import ReportViewer from '../ReportViewer';
 import { render, fireEvent, wait } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { buildRoom, Room, addDesk, addStudent } from '../../models/room';
+import { assignStudent } from '../../models/desks';
 
 let room: Room;
 
@@ -25,7 +26,7 @@ describe('render', () => {
     const desk = addDesk(room);
     const student = addStudent(room);
     student.name = 'Student Testing';
-    room.desks.students[desk.id].push(student.id);
+    assignStudent(room, desk, student);
     const store = mockStore<RootState>({ app: { expanded: false, versions: [] }, room: { current: room, newVersion: true } });
     const result = render(<Provider store={store}><ReportViewer menu="" redirect={jest.fn()} /></Provider>);
 

@@ -1,6 +1,8 @@
 import BruteForceStrategy from '../brute-force-strategy';
 import { buildRoom, addDesk, addStudent } from '../room';
 import { toArray } from '../../utils/collection';
+import { assignStudent } from '../desks';
+import { addStudentPreference } from '../students';
 
 describe('constructor', () => {
   it('should create object', () => {
@@ -15,9 +17,9 @@ describe('averageDistance', () => {
     const d2 = addDesk(room);
     const s1 = addStudent(room);
     const s2 = addStudent(room);
-    room.desks.students[d1.id] = [s1.id];
-    room.desks.students[d2.id] = [s2.id];
-    room.students.preferences[s1.id].push(s2.id);
+    assignStudent(room, d1, s1);
+    assignStudent(room, d2, s2);
+    addStudentPreference(room, s1, s2);
     d1.x = 10;
 
     expect(new BruteForceStrategy().averageDistance(room, s1)).toEqual(10);
@@ -35,9 +37,9 @@ describe('totalAverage', () => {
       let d2 = addDesk(room);
       let s1 = addStudent(room);
       let s2 = addStudent(room);
-      room.desks.students[d1.id] = [s1.id];
-      room.desks.students[d2.id] = [s2.id];
-      room.students.preferences[s1.id] = [s2.id];
+      assignStudent(room, d1, s1);
+      assignStudent(room, d2, s2);
+      addStudentPreference(room, s1, s2);
       d2.x = 10;
     }
 
@@ -74,7 +76,7 @@ describe('arrange', () => {
     strat.arrange(room);
 
     desks.forEach((desk, index) => {
-      expect(room.desks.students[desk.id][0]).not.toBeNull();
+      expect(room.desks.student[desk.id]).not.toBeNull();
     });
   });
 });

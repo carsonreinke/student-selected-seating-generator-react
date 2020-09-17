@@ -1,5 +1,5 @@
-import {buildRoom, addDesk, addStudent, removeDesk, removeStudent, Room, findStudentDesk} from '../room';
-import { CoreDesk } from '../desks';
+import { buildRoom, addDesk, addStudent, removeDesk, removeStudent, Room, findStudentDesk } from '../room';
+import { CoreDesk, assignStudent } from '../desks';
 import { CoreStudent } from '../students';
 
 describe('buildRoom', () => {
@@ -34,8 +34,8 @@ describe('addDesk', () => {
   it('should add students list to desk', () => {
     const desk = addDesk(room);
 
-    expect(Object.keys(room.desks.students)).toContain(desk.id);
-    expect(room.desks.students[desk.id]).toEqual([]);
+    expect(Object.keys(room.desks.student)).toContain(desk.id);
+    expect(room.desks.student[desk.id]).toBeNull();
   });
 });
 
@@ -76,16 +76,16 @@ describe('removeDesk', () => {
   });
 
   it('should remove desk from list', () => {
-    removeDesk(room, desk.id);
+    removeDesk(room, desk);
 
     expect(Object.keys(room.desks.data)).not.toContain(desk.id);
-    expect(Object.keys(room.desks.students)).not.toContain(desk.id);
+    expect(Object.keys(room.desks.student)).not.toContain(desk.id);
   });
 
   it('should remove student', () => {
     const student = addStudent(room);
-    room.desks.students[desk.id].push(student.id);
-    removeDesk(room, desk.id);
+    assignStudent(room, desk, student)
+    removeDesk(room, desk);
 
     expect(Object.keys(room.students.data)).not.toContain(student.id);
     expect(Object.keys(room.students.preferences)).not.toContain(student.id);
@@ -102,7 +102,7 @@ describe('removeStudent', () => {
   });
 
   it('should remove student from list', () => {
-    removeStudent(room, student.id);
+    removeStudent(room, student);
 
     expect(Object.keys(room.students.data)).not.toContain(student.id);
     expect(Object.keys(room.students.preferences)).not.toContain(student.id);
@@ -110,11 +110,11 @@ describe('removeStudent', () => {
 
   it('should remove desk', () => {
     const desk = addDesk(room);
-    room.desks.students[desk.id].push(student.id);
-    removeStudent(room, student.id);
+    assignStudent(room, desk, student);
+    removeStudent(room, student);
 
     expect(Object.keys(room.desks.data)).not.toContain(desk.id);
-    expect(Object.keys(room.desks.students)).not.toContain(desk.id);
+    expect(Object.keys(room.desks.student)).not.toContain(desk.id);
   });
 });
 
@@ -124,7 +124,7 @@ describe('findStudentDesk', () => {
     const desk = addDesk(room);
     const student = addStudent(room);
 
-    room.desks.students[desk.id] = [student.id];
+    assignStudent(room, desk, student);
 
     expect(findStudentDesk(room, student)).toEqual(desk);
   });

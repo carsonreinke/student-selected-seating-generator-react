@@ -3,6 +3,7 @@ import Room from '../Room';
 import { render, fireEvent, wait } from '@testing-library/react';
 import { buildRoom, addDesk, addStudent } from '../../models/room';
 import ResizeObserver from 'resize-observer-polyfill';
+import { assignStudent } from '../../models/desks';
 
 jest.mock('resize-observer-polyfill', () => {
   return jest.fn().mockImplementation((callback) => {
@@ -56,7 +57,7 @@ describe('render', () => {
       student = addStudent(room);
     student.name = 'Testing Name';
 
-    room.desks.students[desk.id].push(student.id);
+    assignStudent(room, desk, student);
 
     const results = render(<Room editable={false} room={room} editName={jest.fn()} moveDesk={jest.fn()} removeDesk={jest.fn()} rotateDesk={jest.fn()} editDimension={jest.fn()} deskEditDimension={jest.fn()} />);
 

@@ -16,7 +16,7 @@ const Hamburger = ({
   }
 
   let classes = styles.hamburger;
-  if(expanded) {
+  if (expanded) {
     classes += ' ' + styles.expanded;
   }
 

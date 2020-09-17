@@ -8,8 +8,12 @@ export interface Data<T extends CoreBase> {
   }
 }
 
-export interface Relationship {
+export interface MultipleRelationship {
   [index: string]: string[];
+}
+
+export interface SingleRelationship {
+  [index: string]: string | null;
 }
 
 export interface Dimension {

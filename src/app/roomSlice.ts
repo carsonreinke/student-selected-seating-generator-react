@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk } from './store';
 import { length } from '../utils/collection';
 import { Room, buildRoom, addDesk as roomAddDesk, removeDesk as roomRemoveDesk, addStudent as roomAddStudent, removeStudent as roomRemoveStudent } from '../models/room';
+import { addStudentPreference as roomAddStudentPreference, removeStudentPreference as roomRemoveStudentPreference } from '../models/students';
 import BruteForceStrategy from '../models/brute-force-strategy';
 
 const INITIAL_DESKS = 6;
@@ -54,13 +55,15 @@ const roomSlice = createSlice({
       roomAddDesk(state.current);
     },
     removeDesk: (state: RoomState, action: PayloadAction<string>) => {
-      roomRemoveDesk(state.current, action.payload);
+      const desk = state.current.desks.data[action.payload];
+      roomRemoveDesk(state.current, desk);
     },
     addStudent: (state: RoomState) => {
       roomAddStudent(state.current);
     },
     removeStudent: (state: RoomState, action: PayloadAction<string>) => {
-      roomRemoveStudent(state.current, action.payload);
+      const student = state.current.students.data[action.payload];
+      roomRemoveStudent(state.current, student);
     },
     moveDesk: {
       reducer: (state: RoomState, action: PayloadAction<MoveDeskPayload>) => {
@@ -99,14 +102,14 @@ const roomSlice = createSlice({
       state.current.name = action.payload;
     },
     addStudentPreference: (state: RoomState, action: PayloadAction<StudentPreferencePayload>) => {
-      const preferences = state.current.students.preferences[action.payload.id];
-      if(!preferences.includes(action.payload.preference)) {
-        preferences.push(action.payload.preference);
-      }
+      const student = state.current.students.data[action.payload.id];
+      const preference = state.current.students.data[action.payload.preference];
+      roomAddStudentPreference(state.current, student, preference);
     },
     removeStudentPreference: (state: RoomState, action: PayloadAction<StudentPreferencePayload>) => {
-      state.current.students.preferences[action.payload.id] =
-        state.current.students.preferences[action.payload.id].filter(preference => preference !== action.payload.preference);
+      const student = state.current.students.data[action.payload.id];
+      const preference = state.current.students.data[action.payload.preference];
+      roomRemoveStudentPreference(state.current, student, preference);
     },
     editStudentName: (state: RoomState, action: PayloadAction<StudentNameChange>) => {
       state.current.students.data[action.payload.id].name = action.payload.name;

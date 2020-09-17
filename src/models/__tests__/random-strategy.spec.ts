@@ -25,8 +25,8 @@ describe('arrange', () => {
     new RandomStrategy().arrange(room);
 
     const desks = toArray(room.desks);
-    expect(room.desks.students[desks[0].id]).not.toBeNull();
-    expect(room.desks.students[desks[1].id]).not.toBeNull();
-    expect(room.desks.students[desks[0].id]).not.toEqual(room.desks.students[desks[1].id]);
+    expect(room.desks.student[desks[0].id]).not.toBeNull();
+    expect(room.desks.student[desks[1].id]).not.toBeNull();
+    expect(room.desks.student[desks[0].id]).not.toEqual(room.desks.student[desks[1].id]);
   });
 });

@@ -2,6 +2,7 @@ import Strategy from './strategy';
 import { Room } from './room';
 import { toArray } from '../utils/collection';
 import { CoreStudent } from './students';
+import { assignStudent } from './desks';
 
 export default class RandomStrategy extends Strategy {
   /**
@@ -36,7 +37,7 @@ export default class RandomStrategy extends Strategy {
   arrange(room: Room) {
     const students = this.shuffle(toArray(room.students));
     toArray(room.desks).forEach((desk, index) => {
-      room.desks.students[desk.id] = [students[index].id];
+      assignStudent(room, desk, students[index]);
     });
   }
 }

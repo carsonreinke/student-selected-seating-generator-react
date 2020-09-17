@@ -2,6 +2,7 @@ import Strategy from '../strategy';
 import { buildRoom, addDesk, addStudent, Room } from '../room';
 import { CoreStudent } from '../students';
 import { toArray } from '../../utils/collection';
+import { assignStudent } from '../desks';
 
 let room: Room, students: CoreStudent[];
 
@@ -18,7 +19,7 @@ describe('distance', () => {
       const desk = addDesk(room);
       const student = addStudent(room);
 
-      room.desks.students[desk.id] = [student.id];
+      assignStudent(room, desk, student);
 
       return student;
     });
