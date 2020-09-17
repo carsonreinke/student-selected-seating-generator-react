@@ -75,3 +75,11 @@ export const removeStudent = (room: Room, studentId: string): void => {
     delete room.desks.students[deskId];
   }
 }
+
+export const findStudentDesk = (room: Room, student: CoreStudent): CoreDesk | null => {
+  const deskId = findInRelationship(room.desks.students, student.id);
+  if (deskId) {
+    return room.desks.data[deskId];
+  }
+  return null;
+}

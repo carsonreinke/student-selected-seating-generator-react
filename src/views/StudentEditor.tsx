@@ -7,7 +7,7 @@ import forward from '../assets/images/forward.svg';
 import back from '../assets/images/back.svg';
 import Student from '../components/Student';
 import { toArray } from '../utils/collection';
-import { addStudentPreference, removeStudentPreference, editStudentName } from '../app/roomSlice';
+import { addStudentPreference, removeStudentPreference, editStudentName, arrange } from '../app/roomSlice';
 
 interface StudentEditorProps {
   menu: ReactNode;
@@ -30,17 +30,13 @@ export const StudentEditor = ({
   });
 
   // Internal handlers
-  const onStartOver = () => {
-    redirect('/');
-  };
+  const onStartOver = () => redirect('/');
   const onNext = () => {
+    dispatch(arrange());
     redirect('/report');
   };
-  const onPrevious = () => {
-    redirect('/desks');
-  };
+  const onPrevious = () => redirect('/desks');
 
-  // TODO
   const onEditName = (id: string, name: string) => {
     dispatch(editStudentName({ id, name }));
   };

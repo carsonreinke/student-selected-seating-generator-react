@@ -1,4 +1,4 @@
-import {buildRoom, addDesk, addStudent, removeDesk, removeStudent, Room} from '../room';
+import {buildRoom, addDesk, addStudent, removeDesk, removeStudent, Room, findStudentDesk} from '../room';
 import { CoreDesk } from '../desks';
 import { CoreStudent } from '../students';
 
@@ -115,5 +115,25 @@ describe('removeStudent', () => {
 
     expect(Object.keys(room.desks.data)).not.toContain(desk.id);
     expect(Object.keys(room.desks.students)).not.toContain(desk.id);
+  });
+});
+
+describe('findStudentDesk', () => {
+  it('should find desk when student assigned', () => {
+    const room = buildRoom();
+    const desk = addDesk(room);
+    const student = addStudent(room);
+
+    room.desks.students[desk.id] = [student.id];
+
+    expect(findStudentDesk(room, student)).toEqual(desk);
+  });
+
+  it('should be null when student not assigned', () => {
+    const room = buildRoom();
+    addDesk(room);
+    const student = addStudent(room);
+
+    expect(findStudentDesk(room, student)).toBeNull();
   });
 });

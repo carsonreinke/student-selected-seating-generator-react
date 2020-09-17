@@ -1,41 +1,43 @@
 import Strategy from './strategy';
+import { CoreStudent } from './students';
+import { Room } from './room';
+import { toArray } from '../utils/collection';
 //import Combinatorics from 'js-combinatorics';
 
 export default class BruteForceStrategy extends Strategy {
-  constructor() {
-    super();
-  }
-
   /**
    *
    * @param Room room
    * @param Student student
    * @returns number
    */
-  averageDistance(room, student) {
-    if (student.preferences.length === 0) {
+  averageDistance(room: Room, student: CoreStudent) {
+    const preferences = room.students.preferences[student.id];
+    if (preferences.length === 0) {
       return 0.0;
     }
-    const total = student.preferences.reduce((accumulator, prefStudent) => accumulator + this.distance(room, student, prefStudent), 0.0);
-    return total / student.preferences.length;
+    const total = preferences.reduce((accumulator, prefStudent) => accumulator + this.distance(room, student, room.students.data[prefStudent]), 0.0);
+    return total / preferences.length;
   }
 
   /**
    *
    * @param Room room
    */
-  totalAverageDistance(room) {
-    return room.students.reduce((accumulator, current) => accumulator + this.averageDistance(room, current), 0.0);
+  totalAverageDistance(room: Room) {
+    return toArray(room.students).reduce((accumulator, current) => accumulator + this.averageDistance(room, current), 0.0);
   }
 
   /**
    *
-   * @param {*} room
-   * @param {*} orderIndex
+   * @param Room room
+   * @param number[] orderIndex
    */
-  assignDesks(room, orderIndex) {
+  assignDesks(room: Room, orderIndex: number[]) {
     orderIndex.forEach((studentIndex, deskIndex) => {
-      room.desks[deskIndex].student = room.students[studentIndex];
+      const deskId = toArray(room.desks)[deskIndex].id,
+        studentId = toArray(room.students)[studentIndex].id;
+      room.desks.students[deskId] = [studentId];
     });
   }
 
@@ -47,7 +49,7 @@ export default class BruteForceStrategy extends Strategy {
    * @param Room room
    * @todo Needs to be optimized
    */
-  arrange(room) {
+  arrange(room: Room) {
     /**
      * Indexes used to try arrangements.
      *
@@ -55,13 +57,13 @@ export default class BruteForceStrategy extends Strategy {
      *  Desk => Student
      * ]
      */
-    let orderIndex = [...room.students.keys()];
+    let orderIndex = [...Array(Object.keys(room.students.data).length)].map((_, index) =>  index);
 
     //Initial assignment
     this.assignDesks(room, orderIndex);
 
     //Go through each student
-    room.students.forEach((_, currentStudentIndex) => {
+    toArray(room.students).forEach((_, currentStudentIndex) => {
       //Find current desk for student
       const currentDeskIndex = orderIndex.indexOf(currentStudentIndex);
 

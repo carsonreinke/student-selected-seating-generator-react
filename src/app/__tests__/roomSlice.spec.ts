@@ -1,8 +1,16 @@
-import room, { addDesk, moveDesk, rotateDesk, removeDesk, addStudent, normalize, newVersion, removeStudent, loadVersion, editRoomName, addStudentPreference, removeStudentPreference, editStudentName } from '../roomSlice';
+import room, { addDesk, moveDesk, rotateDesk, removeDesk, addStudent, normalize, newVersion, removeStudent, loadVersion, editRoomName, addStudentPreference, removeStudentPreference, editStudentName, arrange } from '../roomSlice';
 import { buildRoom, addDesk as roomAddDesk, addStudent as roomAddStudent } from '../../models/room';
 import { mockStore } from '../../../tests/mockStore';
 import { length, toArray } from '../../utils/collection';
 import { RootState } from '../rootSlice';
+import BruteForceStrategy from '../../models/brute-force-strategy';
+
+const mockStrategyArrange = jest.fn();
+jest.mock('../../models/brute-force-strategy', () => {
+  return jest.fn().mockImplementation(() => {
+    return { arrange: mockStrategyArrange };
+  });
+});
 
 it('should use initial state', () => {
   expect(
@@ -85,6 +93,7 @@ describe('loadVersion', () => {
     const state = room({ current: buildRoom(), newVersion: true }, loadVersion(r));
 
     expect(state.current).toEqual(r);
+    expect(state.newVersion).toBeFalsy();
   });
 });
 
@@ -154,7 +163,7 @@ describe('addPreference', () => {
     const s1 = roomAddStudent(r),
       s2 = roomAddStudent(r);
 
-    const state = room({ current: r, newVersion: true }, addStudentPreference({id: s1.id, preference: s2.id}));
+    const state = room({ current: r, newVersion: true }, addStudentPreference({ id: s1.id, preference: s2.id }));
 
     expect(state.current.students.preferences[s1.id]).toContain(s2.id);
   });
@@ -165,7 +174,7 @@ describe('addPreference', () => {
       s2 = roomAddStudent(r);
     r.students.preferences[s1.id].push(s2.id);
 
-    const state = room({ current: r, newVersion: true }, addStudentPreference({id: s1.id, preference: s2.id}));
+    const state = room({ current: r, newVersion: true }, addStudentPreference({ id: s1.id, preference: s2.id }));
 
     expect(state.current.students.preferences[s1.id].filter(id => id === s2.id)).toHaveLength(1);
   });
@@ -178,7 +187,7 @@ describe('removePreference', () => {
       s2 = roomAddStudent(r);
     r.students.preferences[s1.id].push(s2.id);
 
-    const state = room({ current: r, newVersion: true }, removeStudentPreference({id: s1.id, preference: s2.id}));
+    const state = room({ current: r, newVersion: true }, removeStudentPreference({ id: s1.id, preference: s2.id }));
 
     expect(state.current.students.preferences[s1.id]).not.toContain(s2.id);
   });
@@ -189,8 +198,17 @@ describe('editStudentName', () => {
     const r = buildRoom();
     const s = roomAddStudent(r);
 
-    const state = room({ current: r, newVersion: true }, editStudentName({id: s.id, name: 'Testing'}));
+    const state = room({ current: r, newVersion: true }, editStudentName({ id: s.id, name: 'Testing' }));
 
     expect(state.current.students.data[s.id].name).toEqual('Testing');
+  });
+});
+
+describe('arrange', () => {
+  it('should call strategy', () => {
+    room({ current: buildRoom(), newVersion: true }, arrange);
+
+    expect(BruteForceStrategy).toHaveBeenCalled();
+    expect(mockStrategyArrange).toHaveBeenCalled();
   });
 });

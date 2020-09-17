@@ -9,12 +9,12 @@ import ResizeObserver from 'resize-observer-polyfill';
 interface RoomProps {
   editable: boolean;
   room: ModelRoom;
-  moveDesk: (id: string, x: number, y: number) => void;
-  rotateDesk: (id: string, angle: number) => void;
-  removeDesk: (id: string) => void;
-  editName: (name: string) => void;
+  moveDesk?: (id: string, x: number, y: number) => void;
+  rotateDesk?: (id: string, angle: number) => void;
+  removeDesk?: (id: string) => void;
+  editName?: (name: string) => void;
   editDimension?: (rect: Dimension) => void;
-  deskEditDimension: (id: string, rect: Dimension) => void;
+  deskEditDimension?: (id: string, rect: Dimension) => void;
 };
 
 const Room = ({
@@ -32,7 +32,9 @@ const Room = ({
 
   if (editable) {
     onBlur = (event: FocusEvent) => {
-      editName((event.target as HTMLElement).innerText);
+      if (editName) {
+        editName((event.target as HTMLElement).innerText);
+      }
     };
     onKeyDown = (event: KeyboardEvent) => {
       // Ignore everything except "Enter"

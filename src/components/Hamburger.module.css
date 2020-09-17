@@ -10,6 +10,7 @@
   width: 2em;
   height: auto;
   padding: 2.1em 1.6em;
+  cursor: pointer;
 }
 
 .hamburger:hover, .hamburger:focus {
@@ -43,5 +44,11 @@
 @media (max-width: 768px) {
   .hamburger.expanded {
     left: 200px;
+  }
+}
+
+@media print {
+  .hamburger {
+    display: none;
   }
 }

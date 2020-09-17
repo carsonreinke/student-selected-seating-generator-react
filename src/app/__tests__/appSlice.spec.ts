@@ -1,4 +1,4 @@
-import app, { toggle, versions, clearVersions, addVersion, saveVersion } from '../appSlice';
+import app, { toggle, loadVersions, clearVersions, addVersion, saveVersion } from '../appSlice';
 import { buildRoom } from '../../models/room';
 import { mockStore } from '../../../tests/mockStore';
 
@@ -34,9 +34,12 @@ describe('initial state', () => {
 
 describe('versions', () => {
   it('should load from empty storage', async () => {
-    const store = mockStore({ expanded: false, versions: [] });
+    const store = mockStore({
+      app: { expanded: false, versions: [] },
+      room: { current: buildRoom(), newVersion: true }
+    });
 
-    await store.dispatch(versions(storage));
+    await store.dispatch(loadVersions(storage));
 
     expect(store.getActions()).toEqual([{ type: clearVersions.type, payload: undefined }])
   });
@@ -55,8 +58,11 @@ describe('versions', () => {
           return JSON.stringify(buildRoom());
       }
     });
-    const store = mockStore({ expanded: false, newVersion: false, versions: [] });
-    await store.dispatch(versions(storage));
+    const store = mockStore({
+      app: { expanded: false, versions: [] },
+      room: { current: buildRoom(), newVersion: true }
+    });
+    await store.dispatch(loadVersions(storage));
 
     const actions = store.getActions();
     expect(actions).toHaveLength(2);
@@ -69,7 +75,10 @@ describe('saveVersion', () => {
   it('should save to storage', async () => {
     const room = buildRoom();
 
-    const store = mockStore({ expanded: false, newVersion: false, versions: [] });
+    const store = mockStore({
+      app: { expanded: false, versions: [] },
+      room: { current: buildRoom(), newVersion: true }
+    });
     await store.dispatch(saveVersion(storage, room));
 
     const actions = store.getActions();
@@ -83,7 +92,10 @@ describe('saveVersion', () => {
   it('should not duplicate in versions', async () => {
     const room = buildRoom();
 
-    const store = mockStore({ expanded: false, newVersion: false, versions: [room] });
+    const store = mockStore({
+      app: { expanded: false, versions: [room] },
+      room: { current: buildRoom(), newVersion: true }
+    });
     await store.dispatch(saveVersion(storage, room));
 
     expect(store.getActions()).toHaveLength(0);

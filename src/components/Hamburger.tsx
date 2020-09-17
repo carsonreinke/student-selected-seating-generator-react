@@ -21,9 +21,9 @@ const Hamburger = ({
   }
 
   return (
-    <a className={classes} onClick={onToggle} title={expanded ? 'Collapse' : 'Expand'}>
+    <div className={classes} onClick={onToggle} title={expanded ? 'Collapse' : 'Expand'} role="button" aria-pressed={expanded}>
       <span></span>
-    </a>
+    </div>
   );
 };
 export default Hamburger;

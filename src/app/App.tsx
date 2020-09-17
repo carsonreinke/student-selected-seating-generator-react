@@ -47,7 +47,7 @@ const App: FunctionComponent = () => {
         </Route>
 
         <Route path="/report">
-          <ReportViewer menu={menu()} />
+          <ReportViewer menu={menu()} redirect={onRedirect} />
         </Route>
 
         <Route path="/">

@@ -17,6 +17,8 @@ const VersionSelector = ({
   redirect
 }: VersionSelectorProps) => {
   const dispatch = useDispatch();
+  const versions = useSelector(selectVersions);
+
   const onNewVersion = async () => {
     await dispatch(newVersion());
     redirect('/desks');
@@ -39,7 +41,7 @@ const VersionSelector = ({
         </ul>
         <h3>Saved</h3>
         <ul className="pure-menu-list menu-bottom">
-          {useSelector(selectVersions).map(version => {
+          {versions.map(version => {
             return (
               <li className="pure-menu-item pure-menu-link" key={version.id} onClick={() => { onLoadVersion(version) }}>
                 {version.name} Created on {new Date(version.createdAt).toLocaleString()}

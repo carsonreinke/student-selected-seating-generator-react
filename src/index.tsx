@@ -4,6 +4,10 @@ import App from './app/App';
 import { HashRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from './app/store';
+import { loadVersions } from './app/appSlice';
+
+// Load all versions from local storage
+store.dispatch(loadVersions(window.localStorage));
 
 ReactDOM.render(
   <React.StrictMode>
@@ -15,21 +19,3 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('app')
 );
-
-//TODO
-/*const render = () => {
-  const App = require('./app/App').default
-
-  ReactDOM.render(
-    <Provider store={store}>
-      <App />
-    </Provider>,
-    document.getElementById('root')
-  )
-}
-
-render()
-
-if (process.env.NODE_ENV === 'development' && module.hot) {
-  module.hot.accept('./app/App', render)
-}*/

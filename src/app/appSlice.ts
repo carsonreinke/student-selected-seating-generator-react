@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction, Action, ThunkAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Room } from '../models/room';
+import { AppThunk } from './store';
 
 const VERSION_PREFIX = 'sssg-';
 
@@ -22,8 +23,6 @@ interface AppState {
   expanded: boolean;
   versions: Room[];
 }
-
-type AppThunk = ThunkAction<void, AppState, null, Action<string>>;
 
 const initialState: AppState = {
   expanded: false,
@@ -54,7 +53,7 @@ export const {
 
 export default appSlice.reducer;
 
-export const versions = (storage: Storage): AppThunk => async (dispatch) => {
+export const loadVersions = (storage: Storage): AppThunk => async (dispatch) => {
   dispatch(clearVersions());
   [...Array(storage.length)].map((_, index) => storage.key(index))
     .filter(version => version && version.startsWith(VERSION_PREFIX))
@@ -78,7 +77,7 @@ export const saveVersion = (storage: Storage, room: Room): AppThunk => async (di
   saveRoomToStorage(storage, room);
 
   //Add version if new
-  if (!getState().versions.includes(room)) {
+  if (!getState().app.versions.map(r => r.id).includes(room.id)) {
     dispatch(addVersion(room));
   }
 }

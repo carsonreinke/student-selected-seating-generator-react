@@ -53,9 +53,9 @@ interface DeskProps {
   editable?: boolean;
   name?: string;
   desk: CoreDesk;
-  move: (id: string, x: number, y: number) => void;
-  rotate: (id: string, angle: number) => void;
-  remove: (id: string) => void;
+  move?: (id: string, x: number, y: number) => void;
+  rotate?: (id: string, angle: number) => void;
+  remove?: (id: string) => void;
   editDimension?: (id: string, rect: Dimension) => void;
 };
 
@@ -110,7 +110,9 @@ const Desk = ({
 
     if (final) {
       setDragging(null);
-      move(desk.id, x, y);
+      if (move) {
+        move(desk.id, x, y);
+      }
     }
     else {
       setDragging(_dragging);
@@ -135,10 +137,12 @@ const Desk = ({
     if (final) {
       setRotating(null);
       // Update external state only after finalizing
-      rotate(
-        desk.id,
-        _rotating.angle + _rotating.rotation
-      );
+      if (rotate) {
+        rotate(
+          desk.id,
+          _rotating.angle + _rotating.rotation
+        );
+      }
     }
     else {
       setRotating(_rotating);
@@ -166,7 +170,9 @@ const Desk = ({
     dragTrigger();
   };
   const onRemove = (event: ReactMouseEvent) => {
-    remove(desk.id);
+    if (remove) {
+      remove(desk.id);
+    }
   };
   const onRotateStart = (event: ReactMouseEvent | ReactTouchEvent) => {
     // Concept copied from https://bl.ocks.org/joyrexus/7207044
@@ -213,7 +219,7 @@ const Desk = ({
 
   // Provide dimensions to callback
   useEffect(() => {
-    if(!editDimension) {
+    if (!editDimension) {
       return;
     }
 
