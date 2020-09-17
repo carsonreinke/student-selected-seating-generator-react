@@ -7,7 +7,7 @@ import { Data, CoreBase } from '../models/general';
  * @param {string} childId
  * @return {string}
  */
-export function findInRelationship(relation: { [index: string]: string | string[] | null }, childId: string): string | null {
+export const findInRelationship = (relation: { [index: string]: string | string[] | null }, childId: string): string | null => {
   let related;
 
   for (const parentId of Object.getOwnPropertyNames(relation)) {
@@ -26,7 +26,7 @@ export function findInRelationship(relation: { [index: string]: string | string[
  * @param {Object} object
  * @return {number}
  */
-export function length<T extends CoreBase>(object: Data<T>): number {
+export const length = <T extends CoreBase>(object: Data<T>): number => {
   return Object.getOwnPropertyNames(object.data).length;
 }
 
@@ -34,6 +34,6 @@ export function length<T extends CoreBase>(object: Data<T>): number {
  *
  * @param object
  */
-export function toArray<T extends CoreBase>(object: Data<T>): T[] {
+export const toArray = <T extends CoreBase>(object: Data<T>): T[] => {
   return Object.values(object.data);
 }

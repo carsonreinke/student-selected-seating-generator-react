@@ -7,7 +7,7 @@ import '@testing-library/jest-dom/extend-expect';
 window.print = jest.fn();
 window.alert = jest.fn();
 
-const localStorage = (function () {
+const localStorage = (() => {
   let store = {}
   return {
     length: 0,
@@ -16,7 +16,7 @@ const localStorage = (function () {
     removeItem: jest.fn(),
     clear: jest.fn()
   }
-})()
+})();
 Object.defineProperty(window, 'localStorage', {
   value: localStorage,
-})
+});
