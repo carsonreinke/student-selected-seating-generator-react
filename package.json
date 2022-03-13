@@ -1,6 +1,6 @@
 {
   "name": "student-selected-seating-generator-react",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "dependencies": {
     "@reduxjs/toolkit": "^1.4.0",
     "@testing-library/jest-dom": "^4.2.4",
@@ -26,8 +26,8 @@
     "uuid": "^8.3.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "react-scripts --openssl-legacy-provider start",
+    "build": "react-scripts --openssl-legacy-provider build",
     "test": "react-scripts test",
     "deploy": "npm run build && git subtree push --prefix build origin gh-pages"
   },
