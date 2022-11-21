@@ -19,7 +19,7 @@
     "react-multi-select-component": "^3.0.1",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.1",
+    "react-scripts": "5.0.1",
     "redux-thunk": "^2.3.0",
     "resize-observer-polyfill": "^1.5.1",
     "typescript": "^3.7.5",
